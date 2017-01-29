@@ -1,0 +1,90 @@
+***************
+* Lecture 1.1 *
+***************
+
+Primary objective: functional programming from first principles, not necessarily
+Scala but will learn the language. This is like learning a different programming
+paradigm.
+
+Scala: migration from  C/Java to functional programming. Look at programming
+with "fresh eyes". Can integrate it with classical programming to give both of
+best worlds.
+
+Three paradigms:
+
+- imperative (Java and C), understand via instructions for Von Neumann computers
+- functional (Scala, or maybe Haskell is a better example)
+- logic
+
+We want to **liberate** ourselves from Von Neumann-style programming. John
+Backus argued for function programming. So we must avoid conceptualizing
+instruction by instruction (or word by word) and move at a higher-level
+abstraction (?). Martin uses polynomial and string examples. For a polynomial,
+you don't want to define a class and be able to suddenly change coefficients
+(stored in the polynomial class). That would be wrong for the theory of math
+which deals with things like (a+b)x = ax+bx, not just modifying a and b
+directly.
+
+This analogy has some flaws but I think things will be clearer for me later when
+I progress.
+
+Consequence of theory of functional programming: NO MUTATIONS.
+
+This seems restrictive (no mutual variables, assignments, loops, imperative
+control structures) but the focus is on functions, which is easier with
+functional programming.  Functions here will be "first class citizens" as they
+can be defined anywhere, including INSIDE other functions. 
+
+I might check out Martin's book but probably not, I have too much to do, I'll
+focus on the lectures. =)
+
+Martin says functional programming has grown in popularity due to exploiting
+parallelism for multi-core and cloud computing. Is that why John Canny chose to
+use Scala fro BIDMach and BIDMat? And since this is getting so important, I
+really have to finish this Couserea course!!!
+
+***************
+* Lecture 1.2 *
+***************
+
+(Most of this stuff in the first half of this video is familiar to me.)
+
+Interactive shell = REPL, read eval print loop. Just do scala, as I know. But
+don't use that, just use `sbt console`.
+
+The "substitution model" is key: all it does is reduce expressions to values,
+and this can be applied to all expressions so long as they have no side effects.
+This is lambda calculus! Foundation for functional programming. In fact Alonzo
+Church showed that it can express all programs, i.e. Turing Complete. I remember
+this a little bit.
+
+Example: c++ has a side effect, and cannot be expressed by substitution model.
+That's why we don't have side effects in functional programming.
+
+To "do" the substitution model by hand, we have to explicitly substitute values
+and simplify, following specific rules. We can do this call by value or call by
+name. They have tradeoffs: former only evaluates function arguments once, latter
+means function arguments are not evaluated if parameter is unused throughout the
+evaluation.
+
+***************
+* Lecture 1.3 *
+***************
+
+***************
+* Lecture 1.4 *
+***************
+
+***************
+* Lecture 1.5 *
+***************
+
+***************
+* Lecture 1.6 *
+***************
+
+***************
+* Lecture 1.7 *
+***************
+
+
