@@ -1,0 +1,473 @@
+CS 61C Lecture Review
+Fall 2016 Semester
+
+**********************************
+* Lecture 1: Course Introduction *
+* Given: August 25, 2016         *
+**********************************
+
+Lecture is about four things, well, three that matter to me: (1) machine
+structures, (2) great ideas (in architecture), and (3) how everything is just a
+number!
+
+Machine Structures
+
+    C is the most popular programming language, followed by Python. Use C to
+    write software for speed/performance, e.g. embedded systems.
+
+    This class isn't about C programming, but C is a VERY important language to
+    know in order to understand the important stuff: the **hardware-software
+    interface**. It's closer to the hardware than Java or Python.
+
+    Things we'll learn on the software side:
+        Parallel requests 
+        Parallel threads
+        Parallel instructions
+        Parallel data
+        Hardware descriptions
+
+    and the hardware side:
+        Logic gates
+        Main memory
+        Cores
+        Caches
+        Instruction Units
+
+    Looks like the "new version/face" of CS 61C is parallelism, as I should know
+    from CS 267.
+
+Great Ideas in Architecture
+
+    Abstraction (heck, this was Phil Guo's one-word description of CS!!)
+
+        Anything can be represented as a number.  But does this mean we WANT
+        them to be like that?  No, we want to program in a "high-level" like C
+        (LOL!) so that we don't have to trudge through assembly language code.
+
+        We follow this hierarchy: 
+            ==> C
+            ==> compiler
+            ==> assembly language (then machine language??)
+            ==> machine interpretation
+            ==> architecture implementation (the logic circuit diagram?)
+            (I don't fully understand assembly/architecture parts)
+
+    Moore's Law (is it still applicable?!?)
+
+        Basic idea: every 2 years (sometimes I've seen it 1.5 years ...) the
+        number of transistors per chip will double. Transistors are the basic
+        source of computation in computers, they're the bits of electricity that
+        turn into 0s and 1s. From Wikipedia: 
+            "A transistor is a semiconductor device used to amplify or switch
+            electronic signals and electrical power. It is composed of
+            semiconductor material usually with at least three terminals for
+            connection to an external circuit. A voltage or current applied to
+            one pair of the transistor's terminals controls the current through
+            another pair of terminals. Because the controlled (output) power can
+            be higher than the controlling (input) power, a transistor can
+            amplify a signal", 
+        and 
+            "The transistor is the fundamental building block of modern
+            electronic devices, and is ubiquitous in modern electronic systems."
+
+        However, as one would imagine, if you try to pack more and more
+        transistors in a smaller area, it will be exponentially more costly, and
+        I think there will be issues with heat.
+
+    Principles of Locality (memory hierarchy and caches!!)
+
+        Jim Gray's storage latency analogy. I've seen this one before. It's
+        really nice. Everyone has a nice joke to play about caches. Main thing
+        to know is what is actually in the hierarchy:
+            - Registers
+            - On-chip cache
+            - On-board cache
+            - Main memory (i.e. RAM)
+            - Hard disk
+            - Tape and optical robot (not sure what this means)
+        Also see the pyramid in the notes. It makes sense: the stuff "closer" to
+        us in the hierarchy just listed above has to be smaller since there's
+        less room. Thus, registers are cramped in a small space and are limited,
+        but there's much more room for memory on the hard disk. 
+        
+        It seems like we have three main caches: L1, L2, and L3. Not sure on the
+        difference between on-chip vs on-board cache, though. That might be
+        on-chip (as in on the CPU?) vs on the MOTHERboard. As I (finally!!) now
+        know from experience, the CPU chip goes in the motherboard in a very
+        specific spot.
+
+    Parallelism (CS 267!!)
+        
+        This is another thing we should do if possible. We can "fork" calls into
+        several "workers" and then "join" them together later.
+
+        Caveat: Amdahl's law. It tries to predict speed-ups from parallelism.
+        The law states the obvious: if there are parts of an application which
+        cannot be parallelized, then we can't get "perfect" speedup, which
+        hypothetically would be a 2x speedup if we had 2x parallelism.
+
+    Dependency via Reproducibility (should be obvious!)
+
+        The larger our system, the more likely we have individual components 
+        that fail.
+
+        Easiest thing to do: take majority vote, this helps to protect against
+        faulty machines. Redundant memory bits as well; these are Error
+        Correcting Codes (ECCs). Can also do calculations involving the parity
+        of a number (odd vs even) so we have a spare piece of memory which
+        corrects the expected parity as needed. 
+
+(Then have some stuff about class administration. Yeah, I won't post any
+homeworks publicly, they'll be private. =).)
+
+Everything is Just a Number
+
+    Computers represent data as binary values.
+        The *bit* is the unit element, either 0 or 1.
+        Then *bytes* are eight bits, can represent 2^8 = 256 different values.
+        A "word" is 4 bytes (i.e. 32 bits), has 2^32 different values, like Java
+            integers.
+        Then there are 64-bit floating point numbers (and 32-bit as well), numpy
+            can express both though the Theano library encourages 32-bit.
+        All of these are built up into longer and more complicated expressions!
+
+    Be sure to MEMORIZE how to convert: (binary <==> decimal). This is so
+    important to have down cold. I'm definitely intuitively better at going in
+    the ==> direction, just write the number then underneath, going in REVERSE
+    direction, do 2^0, 2^1, etc., then multiply by 1s and 0s and add up. Other
+    direction: keep successively dividing by two and keep track of parities.
+
+    Unfortunately, there's also the hexadecimal notation. That's harder. Now
+    there are 16 different units, not 2 or 10. It goes from 0 to 9 and then we
+    note it as A=10, B=11, C=12, D=13, E=14, F=15. Obviously, I wrote the
+    decimal numbers afterwards, could have easily done the binary version.
+        - There are also octals, with 8 units of computation. 
+        - I'll avoid using these whenever possible.
+
+    How to use these numbers in C?
+        Use %d for decimal (I know this now!)
+        Use %x for hexadecimal
+        Use %o for octal
+    Might also have to write numbers with 0x[...] and 0b[...] with 0x or 0b
+    prefix to indicate which representation we're using.
+
+    Beyond bytes, we have kilobytes, gigabytes, etc. Notice that marketing will
+    assume we multiply by 1000, i.e. kilobytes are 1000 bytes. But in reality we
+    "should" have 1024 bytes per kilobytes. Marketing can get away with not
+    including that extra 24. Grrr. For the binary system, we use an extra "i",
+    so it's KiByte, instead of KByte. And 1GB = 1000MB and 1GiB = 1024MiB.
+    Watch out!
+
+Signed integer representation
+
+    We need to have negative numbers, after all!
+
+    First attempt: first digit (well, leading digit, so leftmost) represents
+        sign, remaining 7 (assuming 8 bits total) are for actual numerical
+        content, "magnitude". But that's bad.
+
+    Better: two's complement. With 4 bits, have 16 total numbers:
+        0 1 2 3 4 5 6 7  8  9 10 11 12 13 14 15
+                        -8 -7 -6 -5 -4 -3 -2 -1 
+
+    Thus, -3 in decimal maps to 13 in binary. This allows us to keep
+    adding/subtraction rules for binary numbers consistent. Right, this is
+    StackOverflow: "Two's complement is a clever way of storing integers so
+    that common math problems are very simple to implement."
+
+    Actually, from their slides, looks like "both" -8 to -1 and 8 to 15 are
+    represented when doing math. There's no special rules needed, they can
+    refer to both numbers. Interesting ... but there would probably need to
+    be some rule to handle overflow. WAIT no, those scenarios make a clear
+    distinction between the unsigned vs signed case. I think it's safe to
+    assume the signed case, always. Otherwise we'd ignore negatives.
+
+    That was helpful, we can REVERSE the role of 0s and 1s, so 1111 = -1,
+    then 1110 = -2, 1101 = -3, and so on. Then when adding numbers, we
+    ignore overflow (assuming it's possible ...) and look at our four bits
+    and it should work out.
+
+    And if you look carefully, our most significant bit (MSB) also indicates
+    the sign, as in our first representation, but doesn't have the drawback
+    of painful math or a +0 and -0 annoyance. Great!
+
+    Yes, as I saw you have to handle overflow. But with two's complement, if
+    signs are different, no overflow detection needed (this makes sense, you
+    can't add a positive and a negative number and get something exceeding
+    your range, that's like a shrinkage factor).
+
+
+**************************
+* Lecture 2: C Language  *
+* Given: August 30, 2016 *
+**************************
+
+Numbers Wrap-Up
+
+    The 2's complement is NOT a "sign+magnitude" representation, because the
+    second part isn't a "magnitude". Clever trick to go from -x to x, we flip
+    bits then add one.
+
+    Can also ignore overflow with certain two's complement operations. See slide
+    6 for the rules.
+
+    (For unsigned operations, any carry-out signals overflow.)
+
+C Primer
+
+    Bla bla bla hello world. Use printf("") for printing. Don't forget \n
+    newlines!! Think of System.out.print("") in Java (not the println version).
+    Also don't forget semicolons. And #include <stdio.h>. They use int
+    main(void) whereas I use int main() but there's no difference in C++ and in
+    C the difference is "questionable". I think it doesn't matter for what I
+    would use. But use int main(void) instead, to clearly specify that the
+    method doesn't take in any arguments (according to StackOverflow).
+
+    Then compiling using gcc program.c ; ./a.out.
+
+    Huh, that's it?!?
+
+Not on the Exam ...
+
+    Looks like this was a break so the lecturers could talk about why Moore's
+    Law is still alive. I'm actually confused at this, what's the general
+    consensus among the computer science experts?  (PS: in the actual lecture,
+    this was put at the end of class. Why is it at the start now?) I mean, yes
+    there's a limit to how far we can shrink transistors, i.e. the size of
+    atoms. I think their argument is an ambiguity argument, they're saying
+    Moore's Law means something deeper than "number of transistors doubles every
+    two years" and that deeper explanation is correct.
+
+Compilation vs Interpretation
+    
+    Progression:
+        [...].c --(compiler)--> [...].o --(linker)--> [a.out]
+    From source (i.e. text) file to "machine code object files" (whatever those
+    are) to actual executable files, what gets run. The linker makes use of
+    other library files, if we're using them, such as stdio.h I think.
+
+        Update: looks like there's a "pre-processor" before the compiler
+        executes, which (1) converts comments to a single space and (2) takes
+        care of logic related to commands that start with #. These are "macros".
+
+    Different from interpreted languages, such as Python, which are run
+    "line-by-line". 
+
+    More similar to Java, but Java converts to "byte code" which is an EXAMPLE
+    of an assembly language.
+
+    Advantages:
+        Faster (this is why numpy uses a C/C++ "back end", more on that later
+        once I better understand it!)
+
+    Disadvantages:
+        Long time to compile
+        Need tools like "make" to avoid compiling unchanged code
+        Architecture- and operating systems-specific
+
+C Type Declarations
+
+    Examples:
+        int a;
+        float b;
+        char c;
+    Like Java, have to declare beforehand, and the type can't change.
+
+    Can do:
+        float pi = 3.14; /* ok this is bad but w/e */
+    But probably better to have it as a constant:
+        const float pi = 3.14;
+
+    BTW for 'unsigned' stuff, just put that before the type, e.g. 'unsigned
+    long'.
+
+    Enumerations:
+        typedef enum {red, green, blue} Color;
+    We can then write:
+        Color pants = green; /* to use one example ... */
+
+    AH, now it's clear, in Java we KNOW ints are 32 bits, but in C it could be
+    16, 32, or 64 bits. Though on my system it's 32 and I think that makes the
+    most sense.
+        To check, use sizeof(int) and print it. I get '4' which must mean the
+        BYTE count.
+
+    No boolean data types! I learned this the hard way. (That's in C++).
+    0=False, anything else is true (but I guess use 1 for convention).
+
+    Standard function definitions, like Java. But it looks like we don't need to
+    use 'public...' or 'public static...'. 
+
+    Uninitialized variables: if you don't define them, they take on a random
+    value in memory, i.e. garbage.
+
+    structs:
+        - Groups of variables
+        - Like Java classes, but no methods
+        - one-liner example syntax:
+            typedef struct {int x, y;} Point;
+        - then to create one:
+            Point p = { 77, -8 };
+
+Concluding Thoughts
+
+    NO CLASSES in C! You need C++ for that, according to my own experience, and
+    StackOverflow. Heck, looks like C++ was for a while known as "C with
+    classes". But now it's just bloated. In C, simulate some class functionality
+    by using structs. Thus, C shouldn't qualify as "object-oriented".
+
+    Other main programmatic difference from Java (first one being no classes) is
+    that in C we have explicit pointers. Let's discuss that in the next lecture.
+
+    There are additional differences in the compilation, obviously.
+
+
+****************************
+* Lecture 3: Pointers      *
+* Given: September 1, 2016 *
+****************************
+
+Pointers in C
+
+    Processor vs Memory in computer, two different components.
+        Former has registers, ALU, etc.
+        Latter contains various bytes that form the programs, data, etc.
+
+    Don't confuse memory address and a value. It's like humans are the 'values'
+    living in their homes as 'memory addresses'. A POINTER is a MEMORY ADDRESS.
+        When we say int a; then a = -85;, the memory address is some unknown
+        integer and the value is -85.
+
+    Know differences:
+        int *x;         // variable x is an address to an int
+        int y = 9;      // y is an int with value 9
+        x = &y;         // assigns *address of* (almost certainly not 9) y to x
+        int z = *x;     // assigns *value of* x (should be 9) to z
+        *x = -7;        // Assigns -7 to what x is pointing at
+
+    Interesting, I get x=1505581164 y=-7 z=9 as the printf output, so when we
+    set the memory address of y to x, and modify what x is pointing at, that
+    will *also* modify what y points at. Interesting ... and a bit of a pain to
+    track.
+
+    Another thing, the type of x is 'int*', NOT 'int'. Watch out! It might be
+    helpful to visualize this the way CS 61C does with its charts. Can write
+    int* pi; or int *pi;, seems like the class does it the latter. It's
+    unambiguous especially for char *a,*b; vs char* a,b;, in which case that 'b'
+    is NOT a pointer to a char.
+
+        Use generic pointers for applications such as allocating or freeing
+        memory, where the code may need to point to arbitrary stuff.
+
+        Have pointers to structs as well, which is where we get the arrow syntax
+        "->" that I've seen before.
+
+        Another trick: *(&a) = a, I believe.
+
+    One thing, if we do '*pa = 5', this is NOT assigning to 'pa' but rather
+    '*pa'. It doesn't really make sense to assign directly to 'pa' unless we
+    know a memory address. Do we really want to gamble that '5' is indeed the
+    correct _memory_address_ and not _value_?
+
+    Functions
+        These have pointers too. For arguments:
+            void foo(int x, int *p) { ... }
+        To call it, use:
+            foo(a, &b);
+        where a and b are both ints. The 'b' will get "passed by reference",
+        since the pointer is passed by value. So it's like Java. There are a ton
+        of blogs about this online.
+
+        PS: I really like their four-column table approach, really helps
+
+Arrays in C (syntactic sugar for pointers, really)
+
+    Several ways to declare basic arrays:
+        int a[5]; // five integer array, obviously, but contents are garbage
+        int b = {1,2,3}; // explicitly assign elements, not garbage =)
+
+    In memory diagram: form contiguous block of memory, index 0 at bottom, then
+    proceeding up we increment indices. 
+
+    #1 way we can shoot ourselves in the foot: no array bounds checking.
+        So remember array sizes, e.g. by using:
+            const int ARRAY_SIZE = 10;
+        and then using that ARRAY_SIZE throughout the program. Don't repeat
+        yourself!
+
+        Helpful to also use sizeof() operator to get number of bytes. I use this
+        frequently. But we can't assume anything about the hardware, other than
+        sizeof(char) == 1. Don't assume: use sizeof(...) instead!
+
+Pointer Arithmetic
+
+    PS: for computers, use byte addresses, so think of memory for an int as
+    taking up four slots, because (at least in one example and on my machine) C
+    ints are 4 bytes.
+
+    I see, we can do stuff like:
+        char c[] = {'a','b'};
+        char *pc = c; // from webcast, also same as &(c[0])
+    so pc is now a char* type, and *pc = 'a'. If we do *pc++; then pc = 'b'. The
+    POINTER is incremented, not the value pointed by it. Yeah, it's confusing,
+    this time we actually want to manipulate the address.
+
+    The array name is a pointer to the 0th element of the "array".
+        char *pstr;
+        char astr[];
+    are identical except we can do pstr++ while we can't do astr++.
+        ALSO: astr[2] = *(astr+2)
+
+    OH I see, when we do pc++ the compiler actually adds sizeof(...) and takes
+    care of that logic for us; it doesn't really "add one". Thanks!
+
+    Bad style to interchange arrays and pointers.
+
+    For methods, you can define them in the following ways:
+        foo(int[] array, unsigned int size);
+        foo(int *array, unsigned int size);
+
+    Be careful when doing sizeof(a) with 'a' an array, because that might
+    represent a pointer, which is usually 8 bytes on modern 64-bit machines. But
+    if you start with int a[40] and do sizeof(a) you actually get
+    10*sizeof(int), that's weird.
+
+    No sense to do so and is also illegal, don't do the following:
+        - Add two pointers
+        - Multiply two pointers
+        - Subtracting a pointer from an integer
+    We CAN, however, compare pointers to NULL, for instance (keyword might be
+    'null' in C).
+
+    Pointers to pointers also exist. Oh no.
+
+Strings and Main
+
+    C strings are "null terminated character arrays":
+        char s[] = 'abc';
+    To find the length, iterate through the string and increment an index.
+    Detect end of string with '0' or whatever special character we have.
+
+    Don't forget the alternative way of writing main() methods with arguments:
+        int main(int argc, char *argv[]) {...}
+    argv is a POINTER ... (of type char*) ... TO AN ARRAY (that contains the
+    string arguments from the command line). The argc is simply the number of
+    arguments.
+
+        When we run ./a.out, the './a.out' part is argv[0], other arguments
+        after that go in later components, in order. It's similar to Python.
+
+Concluding Remarks
+
+    Pointers are the same as (machine) memory addresses.
+    Except for void*, pointers know the type and size of the objects they point
+        to (is this why sizeof(a) for 'int a[10]' is known? Not sure).
+    Pointers are powerful, but dangerous without careful planning.
+
+
+********************************
+* Lecture 4: Memory Management *
+* Given: September 6, 2016     *
+********************************
+
+TODO
