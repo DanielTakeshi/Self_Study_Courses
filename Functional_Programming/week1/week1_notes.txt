@@ -16,7 +16,7 @@ Three paradigms:
 - functional (Scala, or maybe Haskell is a better example)
 - logic
 
-We want to **liberate** ourselves from Von Neumann-style programming. John
+We want to **liberate** ourselves from John Von Neumann-style programming. John
 Backus argued for function programming. So we must avoid conceptualizing
 instruction by instruction (or word by word) and move at a higher-level
 abstraction (?). Martin uses polynomial and string examples. For a polynomial,
@@ -40,8 +40,8 @@ focus on the lectures. =)
 
 Martin says functional programming has grown in popularity due to exploiting
 parallelism for multi-core and cloud computing. Is that why John Canny chose to
-use Scala fro BIDMach and BIDMat? And since this is getting so important, I
-really have to finish this Couserea course!!!
+use Scala for BIDMach and BIDMat? And since this is getting so important, I
+really have to finish this Coursera course!!!
 
 ***************
 * Lecture 1.2 *
@@ -58,33 +58,134 @@ This is lambda calculus! Foundation for functional programming. In fact Alonzo
 Church showed that it can express all programs, i.e. Turing Complete. I remember
 this a little bit.
 
-Example: c++ has a side effect, and cannot be expressed by substitution model.
+Example: C++ has a side effect, and cannot be expressed by substitution model.
 That's why we don't have side effects in functional programming.
 
 To "do" the substitution model by hand, we have to explicitly substitute values
 and simplify, following specific rules. We can do this call by value or call by
-name. They have tradeoffs: former only evaluates function arguments once, latter
-means function arguments are not evaluated if parameter is unused throughout the
-evaluation.
+name. They have trade-offs: former only evaluates function arguments once,
+latter means function arguments are not evaluated if parameter is unused
+throughout the evaluation.
 
 ***************
 * Lecture 1.3 *
 ***************
 
+This provides more comparisons of CBN vs CBV, particularly as it regards to with
+vs without termination.
+
+Here's an important "theorem": if CBV terminates, then CBN also terminates, but
+*not* vice versa.
+
+Here's a simple example (pseudocode_:
+
+    first(x,y)=x
+
+    first(1, loop)
+
+Here, CBN terminates because it ignores the loop. However, CBV gets in an
+infinite loop.
+
+Despite this example, Scala uses CBV, but we can enforce CBN using `=>` as they
+do in the next example, showing how CBV can "get around that" problem by
+treating `y` as a special CBN parameter.
+
 ***************
 * Lecture 1.4 *
 ***************
+
+Conditionals and value definitions, two more "syntax constructs."
+
+Standard if-else, but used for **expressions** not statements. What does this
+mean? I think it means we don't have to write a return statement. Actually
+that's a general rule for Scala! Generally, legal Java expression => legal in
+Scala.
+
+Also have reduction rules, etc., such as && and ||. BTW those short-circuit
+evaluation, so they don't test the second argument if the first one determines
+the answer.
+
+There's a nice connection with CBV or CBN parameters: **definitions** can be CBV
+or CBN. The `def` is by name, the `val` is by value. So `def` must be evaluated
+upon each use, but `val` is evaluated at the point of its initialization. Oh,
+nice connection! =) Note that this is a loop but with effects dependent on how
+we use it:
+
+    def loop: Boolean = loop
+
+For definitions, we're OK (it will not loop forever),  but with vals, we're bad.
+
+Clever:
+
+    def and(x:Boolean, y:Boolean) = if (x) y else false
+
+This is without using &&.
 
 ***************
 * Lecture 1.5 *
 ***************
 
+This is about defining square roots using Newton's method, so we have a
+non-trivial program. `def sqrt(x: Double): Double = { ... }`. He shows an
+example using Eclipse and its "session" functionality which is like a better
+version of the Scala command line (heh, like iPython is better than the Python
+interpreter). Use packages, even though it's not necessary here, because it
+keeps things ordered.
+
+Scala language note: explicit return types are not generally needed, but for
+*recursive* functions, we need them otherwise the compiler wouldn't be able to
+tell the return type. It's good practice to put the return type even if it's not
+needed.
+
+I see, I understand the code he wrote. Yes, it had problems with small/large
+numbers. I naively thought we should take logs and exponentials as needed, but
+in fact we only had to normalize our absolute difference so that the epsilon we
+chose, 0.001, is of the "appropriate value" rather than something too large or
+too small.
+
 ***************
 * Lecture 1.6 *
 ***************
+
+In the last lesson, we defined several methods separately, but we don't want the
+use to access any of them except for the `sqrt function. So we can nest all the
+other function definitions **inside** an overall `sqrt` call. He used a *block*
+by nesting with parentheses.
+
+Visibility is as what I would expect, i.e. stuff defined in blocks are not
+visible to other blocks, and expressions outside blocks are visible inside them
+*so long as* they are not overshadowed (or "over-written") by something inside
+with the same name. Yes, pretty obvious. OH, and it makes the square root
+function cleaner since we don't have to re-define `x` as a parameter.
+
+Don't use semicolons unless we want more than one statement, as in:
+
+    val y = x+1; y*y
+
+To deal with two-line operations surround with parentheses or to write operator
+ion the end of the *first* line. But in BIDMach, we don't do that, we just write
+long expressions on one line. =)
 
 ***************
 * Lecture 1.7 *
 ***************
 
+Time to wrap up the first week by talking about *tail recursion*. 
 
+But before that, some substitution formalism. (I'm not sure why this is
+important.) Then we did re-writing steps with Euclid's gcd function and the
+classical (recursive) factorial function.
+
+Rule: if a function calls itself as its last action, the function's stack frame
+can be reused. This is *tail recursion*, i.e. iteration, and it's good because
+we can run this in constant space. With classic factorial, we had our last
+argument as n*factorial(n-1), meaning that the last term was not our function,
+it was a more complicated expression with `n*` there.
+
+We can require that a function is tail-recursive by adding the `@tailrec` in the
+line above the method definition. Interesting!
+
+The last part of the lecture was about designing a tail-recursive version of
+factorial. Fortunately, I was able to figure this out. =)
+
+OK week 1 lectures done. Let's do the assignment.
