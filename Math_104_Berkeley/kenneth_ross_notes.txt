@@ -67,3 +67,90 @@ includes:
 *************
 * CHAPTER 2 *
 *************
+
+This is about sequences and is hugely critical to understanding the rest of the
+book, and for real analysis in general.
+
+Section 2.7
+
+- Sequences are just a function from an index to some value.
+
+- We formally define _limits_, _convergence_, and _divergence_. See the
+  textbook. I won't belabor the point here. Side note: limits are unique (prove
+  this by assuming two limits, then showing that |s-t| is less than epsilon
+  using the definitions and then the triangle inequality).  Side note 2:
+  oscillations (as in, (-1)^n) do not converge!
+
+Section 2.8
+
+- A discussion on proofs! When proving limits, we should invoke the formal
+  definition and find n and epsilon s.t. the definition of a limit holds.
+
+- There are several interesting examples. I did a few of them quickly. I don't
+  think I will ever have to invoke these directly any time soon (I'm mostly
+  reading this section so that the more important parts later are clearer to
+  me).
+
+- Exercise 8.5 is interesting, the "squeeze lemma" and I remember Professor
+  Mihai Stoiciu talking about this during office hours (heh, we never had office
+  hours _in_ his office since there were so many people!).
+
+Section 2.9
+
+- Limit theorems for sequences. I can invoke these pretty easily. I will again
+  be skimming the proofs.
+
+- Oof, there's a lot of them. Mostly they involve similar techniques such as
+  working backwards and solving for the tightest bounds, so we get the lowest
+  value N such that the statement: "when n > N we get |s_n - s| < epsilon" is
+  true. We have to sometimes develop upper bounds, and often have to use epsilon
+  times some constant so that the later algebra gets it equal to epsilon. I've
+  seen this stuff many times.
+
+Section 2.10
+
+Monotone Sequences and Cauchy Sequences. These help us conclude convergence of
+sequences _without_ knowing limits in advance.
+
+- Theorem 10.2:
+
+- Theorem 10.11:
+
+Section 2.11
+
+Section 2.12
+
+
+*************
+* CHAPTER 3 *
+*************
+
+TODO
+
+
+*************
+* CHAPTER 4 *
+*************
+
+TODO
+
+
+*************
+* CHAPTER 5 *
+*************
+
+TODO
+
+
+*************
+* CHAPTER 6 *
+*************
+
+TODO
+
+
+*************
+* CHAPTER 7 *
+*************
+
+TODO
