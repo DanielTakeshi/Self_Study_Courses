@@ -1,0 +1,69 @@
+********************************************************************************
+* These are notes based on:
+* 
+* Kenneth A. Ross
+* Elementary Analysis: The Theory of Calculus
+* Second Edition, 2013
+********************************************************************************
+
+
+*************
+* CHAPTER 1 *
+*************
+
+I skimmed this chapter and I should know just about everything from it. It
+includes:
+
+- Natural numbers
+
+- Simple induction
+
+- Rational numbers (also the definition of an "algebraic number")
+
+- The "Rational Zeros" theorem, which might be useful if I need to find
+  candidates for solving certain polynomial equations. This can also be used to
+  prove that sqrt(2) is not a rational number, and several other numbers, mostly
+  by doing some brute-force cases for checking all possible solutions. It's a
+  bit boring to do that! Note: this theorem only applies to finding *rational*
+  zeros of polynomials with *integer* coefficients. For a more general rule, use
+  "Newton's method" or the "secant method."
+
+- The set of real numbers. Now we're getting into real stuff here! We also have
+  the triangle inequality, blah blah blah ...
+
+- The Completeness Axiom. This is the assertion that "\mathbb{R} has no gaps"
+  and is the key factor which distinguishes \mathbb{R} from \mathbb{Q}. (It's
+  discussed in Section 4.4.) Among other things, this section discusses:
+
+    - The concepts of a minimum, maximum, and slightly more non-trivially, those
+      of an _infinum_ (greatest lower bound) and _supremum_ (least upper bound).
+      For the latter two, I know clearly that sup S and inf S do not have to
+      belong to S! Classic example: (a,b). I remember doing examples like these
+      from MATH 305 at Williams College: basically, finding the infimums and
+      supremums of sets. It's nothing too fancy. Man, I must have been a bad
+      student back then!
+
+    - The concepts of upper bounds, lower bounds, etc.
+
+    - The completeness axiom (as I mentioned). This does _not_ hold for the
+      rationals!
+
+  Yeah, nothing too advanced here. I'm happy that at least this material is easy
+  for me to understand and review.
+
+- The symbols +infinity and -infinity, which are useful but must be handled with
+  care. Do not treat them as real numbers that can be plugged into theorems!
+  Note that it is also discussed that for nonempty, _bounded_ subsets A and B of
+  \mathbb{R}, sup(A + B) = sup A + sup B and the same relation for infimums.
+  This might be useful in some statistics proofs if we are dealing with multiple
+  sets.
+   
+    - Useful to define sup S = +infinity if S is not bounded above, etc.
+
+- The last section is a "Development of \mathbb{R}" and it's probably not that
+  useful for me.
+
+
+*************
+* CHAPTER 2 *
+*************
