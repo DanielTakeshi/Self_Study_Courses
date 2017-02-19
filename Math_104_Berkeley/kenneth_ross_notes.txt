@@ -112,13 +112,63 @@ Section 2.10
 Monotone Sequences and Cauchy Sequences. These help us conclude convergence of
 sequences _without_ knowing limits in advance.
 
-- Theorem 10.2:
+- Monotone sequences are those which are always increasing or always decreasing.
+  They _can_ converge, if the rate of increase (respectively, decrease) slows to
+  zero, think of 1/x for x>0 as x grows large.
 
-- Theorem 10.11:
+- Important Theorem I (10.2 in the book): All bounded monotone sequences
+  converge.
+
+  - Proof: let u be the supremum of the bounded sequence, so then we just show
+    lim s_n = u. We start by fixing an epsilon (as usual) then we have to find
+    some N such that for all n > N, we get |s_n - u| < epsilon. Well, (s_n) is
+    increasing so we just need to first find an N so that u-epsilon < N <
+    epsilon and then that automatically proves the statement. Yay! The proof is
+    short and elegant. Again, it just relies on proving the limit statement!!
+
+  - There's a related theorem which shows that if the sequences are unbounded,
+    then, well they converge to infinity or minus infinity. (This is assuming
+    monotone, because otherwise you can have oscillations to infinity, which
+    would mean something different I guess.) Thus, limits of monotone sequences
+    always have meaning.
+
+- Important Theorem II (10.11 in the book): a sequence is a convergent sequence
+  IFF it is a Cauchy sequence.
+
+  - Proof: well, they did one direction earlier and it makes sense. The other
+    direction also makes sense. In both cases we simply start with the
+    definition and try to prove the property. They can be tricky to come up.
+    Mostly it's about making sense of sup-s and thinking of "stuff plus
+    epsilon."
+
+  - Uses Definition 10.8 which defines a _Cauchy_sequence_, a sequence has this
+    property if for each epsilon > 0 there exists N such that (m,n) both greater
+    than N implies |s_n - s_m| < epsilon.
+
+  - Why is it useful? Because we can confirm that a sequence converges by
+    verifying that it satisfies the Cauchy sequence property. We do not have to
+    explicitly compute a limit in this case!
+
+- There's an interlude about discussions of decimals, but it's not likely to be
+  much of concern to me. Don't forget about the geometric series convergence
+  formula! It's 1/(1-r) for r>1. 
+
+- There is also discussion on lim sup and lim inf. A sequence has a limit if and
+  only if their `lim inf` and `lim sup` are equal. Also, lim sup is NOT
+  generally sup{s_n for all n} because as N grows large, the set of elements we
+  consider for lim inf gets smaller, hence the correct relationship is <=. Also,
+  it's these lim inf and lim sup concepts which motivate the Cauchy sequence
+  definition (see my notes above).
 
 Section 2.11
 
+Subsequences!!
+
+TODO
+
 Section 2.12
+
+TODO
 
 
 *************
