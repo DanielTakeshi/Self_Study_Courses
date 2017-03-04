@@ -1,0 +1,116 @@
+**************************************************************************
+* NOTES ON CHAPTER 16: Structured Probabilistic Models for Deep Learning *
+**************************************************************************
+
+I expect to know the majority of this chapter, because it's probably going to be
+like Michael I. Jordan's notes. "Structured Probabilistic Models" are graphical
+models! But the key is that this should help me better understand the current
+research frontiers of Deep Learning, and it's self-contained. Let's see what it
+has to offer ...
+
+Their "Alice and Bob" (and "Carol" ...) example has to do with running a relay,
+which is better than Michael I. Jordan's example of being abducted by aliens.
+
+I remember Markov Random Fields, yes, we need to define a normalizing constant
+Z, but (a) if we define our clique potentials awfully, Z won't exist, and (b) in
+deep learning, Z is usually intractable.
+
+I agree with their quote:
+
+> One key difference between directed modeling and undirected modeling is that
+> directed models are defined directly in terms of probability distributions
+> from the start, while undirected models are defined more loosely by \phi
+> functions that are then converted into probability distributions. This changes
+> the intuitions one must develop in order to work with these models.
+
+When they go and talk about their example with x being binary and getting
+Pr(X_i = 1) being a sigmoid(b_i), you can get that by explicitly writing out the
+formula, then "rearranging" the sum so that terms independent of the current,
+rightmost sum get pushed left. Then you see that the numbers mean we get
+independence, and can split the fractions, etc. It brings back good memories of
+studying CS 188.
+
+Section 16.2.4 is on Energy-Based functions. John Canny would really like those!
+I think the easiest way for me to think of these is taking potentials of
+arbitrary functions and then using e^{-function}. AKA Boltzmann Machines. I like
+their discussion here; it is relatively elucidating.
+
+There is also review on what edges mean when describing graphical models. Again,
+this is all CS 188 stuff. For instance, remember that we can add more edges to a
+graphical model and still represent the same class of distributions (the edges
+can be unnecessary).
+
+One advantage for each type:
+
+- It is easier to sample from directed models (I agree).
+- It is easier to perform approximate inference on undirected models (I think I
+  agree).
+
+Key fact: 
+
+> Every probability distribution can be represented by either a directed model
+> or by an undirected model.
+
+Though there are some directed models for which no undirected model is
+equivalent to it. By "equivalent" here we mean in the precise set of
+independence assumptions it implies.
+
+And another key idea:
+
+> When we represent a probability distribution with a graph, we want to choose a
+> graph that implies as many independences as possible, without implying any
+> independences that do not actually exist.
+
+E.g. a loop of length 4 (with no chords inside) is an undirected graphical
+model, but we have to add an edge before adding orientations to the edges to
+"convert" it to as simple a directed graphical model as possible (that still
+implies as many (or as few?) assumptions).
+
+Section 16.3: sampling from graphical models. I agree, it's easy for directed
+models. They call it "ancestral sampling" whereas I've called it "forward
+sampling," I think from Daphne Koller. We have to modify it if we want to do
+more general sampling with conditioning, i.e. fixed variables. It's toughest if
+the variables are *descendants*. Ancestors are easier because we can fix them
+and just do P(x|parents(x)) as usual. For *undirected* models ... they mention
+Gibbs sampling. =)
+
+The next few sections are pretty short. They mention *structure learning*, i.e.
+learning the graphical model structure. That's a hard problem due to the
+super-exponential number of possibilities. However, it seems like structure
+learning --- as far as I can tell --- is no longer active? They also mention the
+importance of latent variables. Yes, that's a bit broad, but I agree. Just
+before the "real" Deep Learning part they talk about inference and approximate
+inference, which is something that I should know about well (but they just give
+a broad treatment, a bit unclear).
+
+Finally, the Deep Learning part that I wanted to read.
+
+After reading it, I just want to clarify: when people draw out a fully connected
+net, they usually write out nodes, edges, in layer format, etc. Is that
+correctly viewed as a *graphical model*? Or are those different design criteria?
+Also, I'm assuming that all the "latent variable" discussion is simply referring
+to the hidden layers (and their units)? I think that's the case after reading
+about why loopy belief propagation is "almost never" used in deep learning. (Oh,
+and by the way, I don't actually know loopy belief propagation ... and I just
+barely remember belief propagation.) I think it makes sense, in normal graphical
+models, we want the computational graph to be sparse to prevent high treewidth,
+but in deep learning, we do matrix multiplication which creates a lot of
+connectivity. So, matrix multiplication, not loopy belief propagation.
+
+They discuss *Restricted Boltzmann Machines* at the end. They say it is the
+"quintessential example" of using graphical models for deep learning. With only
+one hidden layer, it is not too deep (a.k.a. it looks like a normal graphical
+model) but it groups variables into layers, like deep learning. For now, let's
+only worry about the "canonical form" which is an energy-based model with a
+particular (negative) quadratic form plus linear terms. The inputs are (v,h).
+The names should be familiar: v=visible and h=hidden. Then it's like a complete
+bipartite graph with v on one side and h on the other. We can do Gibbs sampling
+on this (in fact, _block_ Gibbs sampling).
+
+Concluding point:
+
+> Overall, the RBM demonstrates the typical deep learning approach to graphical
+> models: representation learning accomplished via layers of latent variables,
+> combined with efficient interactions between layers parametrized by matrices.
+
+I've now read the chapter and feel pleased. Great job, authors!

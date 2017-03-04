@@ -164,7 +164,13 @@ Section 2.11
 
 Subsequences!!
 
-TODO
+- I know the definition, obviously. You can also view it as defined by a
+  "selection function." This point of view is probably useful if you are trying
+  to _extract_ "interesting" indices within the overall sequence.
+
+- IMPORTANT: Theorem 11.2. This defines three facts about subsequences.
+
+(I don't quite follow?)
 
 Section 2.12
 
