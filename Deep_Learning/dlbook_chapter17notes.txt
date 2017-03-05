@@ -1,0 +1,88 @@
+********************************************
+* NOTES ON CHAPTER 17: Monte Carlo Methods *
+********************************************
+
+I think this chapter will also be review, but I have forgotten a lot of this
+material. It might also help me for my other projects with BIDMach.
+
+Heh, Las Vegas algorithms ... we never talk about those in Deep Learning. I
+agree, we should stick with deterministic approximation algorithms or Monte
+Carlo methods. Right, the point here is we have something we want to know, such
+as the expected value of a function (which depends on the data). Use sampling to
+take the average of f(x_1), ..., f(x_n) to form our estimate of E_p[f(x)] for
+some base distribution p. We can compute our expected error via the Central
+Limit Theorem. (Which John Canny said is "the most abused theorem in all of
+statistics" but never mind ...)
+
+But what if we cannot even sample from our base distribution p in the first
+place. For the above, we needed to draw x_1, ..., x_n somehow! We now turn to
+our possible solutions: importance sampling and MCMC. (The latter includes Gibbs
+sampling, and maybe even contains importance sampling? Not totally sure.)
+
+Section 17.2, Importance Sampling.
+
+I see, we can turn Equation 17.9 into Equation 17.10 just by switching the
+distribution the x_i's are drawn from, and adding in the necessary functions.
+Yes, they have the same expected value ... and I can see why the variance would
+be different. They argue that the minimum variance is the q^* in Equation 17.13.
+Yeah ... that seems familiar. How do they derive that? If indeed f did not
+change signs, then p and f cancel and the variance turns into a constant. Yay!
+
+I'm not really getting much out of this section other than definitions.  I'll
+mark a TODO for myself to look at the examples they give in other parts of the
+book; this chapter is not as self-contained as Chapter 16.
+
+Section 17.3, Markov Chain Monte Carlo (my favorite!). They refer the reader to
+Daphne's book for more details (which I've read before!).
+
+MCMC methods use *Markov chains* to approximate the desired sample distribution
+(call it p_model). These are most convenient for energy based models, p \propto
+exp(-E(x)), because they require non-zero probabilities everywhere. They also
+assume that the energy-based models are for _undirected_ graphical models, so
+that it's difficult to compute conditional probabilities.
+
+Procedure: start with random x, keep sampling, after a suitable burn-in period,
+the samples will start to come from p_model. Use a transition distribution
+T(x'|x), or a "kernel" in some of the literature.
+
+They show the usual matrix update in Equation 17.20, only for discrete random
+variables. Here, v should be in the probability simplex of dimension d where d
+is the amount of values that x can take on. Remember, we're in discrete land
+here.
+
+Something new to me: the matrix "A" here is a "stochastic matrix" and over time,
+its eigenvalues will converge to one as the exponent increases, or they'll decay
+to zero. Interesting ...  the Perron-Frobenius Theorem they refer to is from a
+1907 paper (!!!).
+
+They say "DL practitioners typically use 100 parallel Markov chains." Having
+independent chains gives us more independence. Why haven't I been doing this ...
+
+Section 17.4, Gibbs Sampling (yay ...).
+
+Not much in this section, they just say that for Deep Learning, it's common to
+use these for energy-based models, such as RBMs, though we better do block Gibbs
+sampling.
+
+Other stuff: 
+
+They point out that the main problem with MCMC methods in high dimensions is
+that they mix poorly; the samples are too correlated. It might get trapped in a
+posterior mode, but I'm curious: how much of a problem is that? For deep neural
+networks, the biggest problem is with saddle points. They argue that the MCMC
+methods will not be able to "traverse" regions in manifold space with high
+energy. Those result in essentially zero p(x) due to e^{-H(x)}.
+
+Oh, I see, now they talk about temperature to aid exploration. Yeah, I know
+about that! =) Finally, I can see a reference about temperature. Think of
+temperature as:
+
+p(x) \propto exp(-H(x)/T)
+
+Thus, when temperature is high, the value in the exponent increases to zero, so
+the distribution becomes more uniform.
+
+You know, if there was more research done with MCMC methods and Deep Learning,
+wouldn't this chapter have discussed them? There isn't much here, to be honest,
+and lots of the references are pre-2012. And also, for tempering, why not cite
+some of the references they have in my own work?
