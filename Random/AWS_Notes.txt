@@ -1,0 +1,68 @@
+-----------------------
+- AMAZON WEB SERVICES -
+-----------------------
+
+****************
+* May 11, 2017 *
+****************
+
+I promise, I will learn how to use AWS so that I can finally run code in
+clusters instead of running pseudo-parallel code on my personal workstation.
+
+First, a few pointers, definitions, etc:
+
+- Be careful! Don't run code for no reasons. This uses up resources. It's not
+  like my personal machine where I can pound it for no reason. Again, be
+  careful. Also, be mindful of the location of the actual computing resources
+  I'm using.
+
+- Amazon Web Services (AWS). It seems like I can use this just by using my
+  normal Amazon account. It provides a number of services for cloud computing,
+  which lets me use lots of computing power via the Internet, so long as we
+  pay an amount commensurate with our usage level. See also:
+
+  > Cloud computing provides a simple way to access servers, storage, databases
+  > and a broad set of application services over the Internet. A Cloud services
+  > platform such as Amazon Web Services owns and maintains the
+  > network-connected hardware required for these application services, while
+  > you provision and use what you need via a web application.
+
+  (Cloud computing is really a marketing term ... don't put too much thought
+  into it. Just think of it as a way for me to access lots of resources without
+  having to buy them online, assemble my workstation, tell Berkeley to hook them
+  up to the Internet, etc. I have one desktop that took me a while to set up; a
+  server with many machines would take a lot longer to set up.)
+
+- Amazon Elastic Compute Cloud (EC2). These "EC2 Instances" are "virtual
+  machines" that AWS provides, i.e. EC2 is a component of AWS.  It seems to be
+  an example of "Infrastructure as a Service" (IaaS).
+  
+- Amazon Machine Instances (AMI). These are virtual machines. I can use these to
+  launch stuff within the EC2. Don't forget to keep the key-pair! I think the
+  point with cloud computing is that we can pick and choose which images match
+  our desired specs and then "run them." To connect to these, use the good
+  old-fashioned ssh.
+
+- Google Cloud. I don't think I need to use this? It seems to be an alternative
+  to Amazon Web Services. Once I have a Google Cloud account, I can create
+  Google Compute Engines (GCEs) to run code, and even use Jupyter Notebooks for
+  those which I can access in my local browser. For GPUs, I need to send in
+  special requests.
+
+See the following for a comparison between these two:
+
+http://cloudacademy.com/blog/google-cloud-vs-aws-a-comparison/
+
+The AWS website has lots of tutorials. I will check those tomorrow.
+
+Python libraries to know/learn:
+
+- boto (or boto3?)
+- redis
+- multiprocessing
+- click
+
+I've only "used" multiprocessing before ... and it didn't work for me. Also,
+click seems to be more for command line arguments instead of distributed
+systems. It seems to be an alternative to argparse ... yeah, I better check that
+out! It might take up the subject of my next blog post.
