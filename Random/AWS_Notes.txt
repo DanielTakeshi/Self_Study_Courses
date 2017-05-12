@@ -66,3 +66,44 @@ I've only "used" multiprocessing before ... and it didn't work for me. Also,
 click seems to be more for command line arguments instead of distributed
 systems. It seems to be an alternative to argparse ... yeah, I better check that
 out! It might take up the subject of my next blog post.
+
+
+****************
+* May 12, 2017 *
+****************
+
+I went through this 10-minute tutorial: "Launch a Linux Virtual Machine".
+Highlights:
+
+- After clicking "Launch Instance", I get to the familiar AMI page. Think of
+  this as a place to choose my desired computer specs. (Note: to avoid
+  confusion, this is what happens when we're at the AWS console; there is
+  another "Launch Instance(s)" button that happens later, once I'm actually
+  ready to do something.)
+
+- The tutorial uses a "General Purpose Instance" which should probably be my
+  default choice for applications, unless I have a pressing reason to use
+  something else. It also automatically clicks the "free tier eligible" image.
+
+- Wow, there is a LOT of stuff on the AWS Interface. Getting used to the GUI
+  will take a while, but I at least know how to see my instances.
+
+- I can connect to my instance using:
+
+    ssh -i ~/.ssh/MyKeyPair.pem ec2-user@{IP_Address}
+
+  The IP address can be found on the AWS interface. This puts me in the
+  `/home/ec2-user` folder on an instance, and it looks like I'm the only user.
+  Huh, that's interesting, I thought this was going to be a shared machine with
+  loads of users. Looks like `python` is installed, but not `ipython`. Argh.
+
+- I terminated the state, and I got this message:
+
+    Broadcast message from root@ip-[IP CENSORED]
+        (unknown) at 16:55 ...
+    
+    The system is going down for power off NOW!
+    Connection to [IP CENSORED] closed by remote host.
+    Connection to [IP CENSORED] closed.
+
+  Interesting ...
