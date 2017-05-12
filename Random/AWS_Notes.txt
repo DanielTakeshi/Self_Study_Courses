@@ -41,7 +41,10 @@ First, a few pointers, definitions, etc:
   launch stuff within the EC2. Don't forget to keep the key-pair! I think the
   point with cloud computing is that we can pick and choose which images match
   our desired specs and then "run them." To connect to these, use the good
-  old-fashioned ssh.
+  old-fashioned ssh. There are community-provided AMIs which I assume are from
+  people/groups around the world who are letting us use their machines in
+  exchange for payment. There are also marketplace AMIs, which are verified by
+  AWS.
 
 - Google Cloud. I don't think I need to use this? It seems to be an alternative
   to Amazon Web Services. Once I have a Google Cloud account, I can create
@@ -106,4 +109,76 @@ Highlights:
     Connection to [IP CENSORED] closed by remote host.
     Connection to [IP CENSORED] closed.
 
-  Interesting ...
+  Interesting ... if we did *not* terminate the instance (but it was idle) then
+  we still get charged. I didn't get charged (I hope not ...).
+
+
+Another potential resource:
+
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html
+
+"Setting Up":
+
+- I see, this is why I didn't need a password:
+
+  > AWS uses public-key cryptography to secure the login information for your
+  > instance. A Linux instance has no password; you use a key pair to log in to
+  > your instance securely. You specify the name of the key pair when you launch
+  > your instance, then provide the private key when you log in using SSH.
+
+- There's some stuff about "Virtual Private Clouds" and "Security Groups," but
+  I'm not sure I understand or if it's that important right now. Think of those
+  as firewalls, maybe? Yeah, the EC2 console says security groups control access
+  to the instance.
+
+
+"Getting Started":
+
+- This is basically the same as the 10-minute tutorial. They also tell us how to
+  connect with a browser. That might be inconvenient, but maybe not, if we're
+  running on 1000 machines. But how do we run code using this? There must be
+  some command line?
+
+- Oh, here's what they say about termination:
+
+  > Terminating an instance effectively deletes it; you can't reconnect to an
+  > instance after you've terminated it.
+
+  I see. On the EC2 console, I can't seem to re-start that instance I created in
+  that 10-minute tutorial. There is, however, a difference between STOPPING and
+  instance versus TERMINATING an instance. The former lets me reuse the instance
+  at some point later (and it doesn't charge me for the stopping period, though
+  there IS a charge for storage ... look at their description about this).
+
+
+For billing, see:
+
+http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-what-is.html
+
+A few pointers:
+
+- To see billing on the dashboard, click my name, and then the billing dashboard
+  setting. It should be intuitive.
+
+- Try to use the free tier to test things:
+
+  > You can test-drive some AWS services free of charge, within certain usage
+  > limits. AWS calls this the AWS Free Tier. The free tier is designed to give
+  > you hands-on experience with a range of AWS services at no charge. For
+  > example, you can explore AWS as a platform for your business by setting up a
+  > test website with a server, alarms, and database. You can also try out
+  > services for developers, such as AWS CodePipeline, AWS Data Pipeline, and
+  > AWS Device Farm.
+
+- Actually, looks like I'm not on the free tier since I had made the account in
+  November 2015 despite NOT EVER USING IT ... 
+
+
+For running on clusters, see:
+
+http://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html
+
+Another piece of software that might be useful is Packer. This helps me create
+identical machine images (i.e. AMIs) so that the nodes in a cluster are running
+and using the same stuff/settings. It's installed on my station.  Use `.json`
+files for building images (be careful about expenses!).
