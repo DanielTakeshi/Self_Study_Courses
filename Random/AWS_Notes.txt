@@ -182,3 +182,13 @@ Another piece of software that might be useful is Packer. This helps me create
 identical machine images (i.e. AMIs) so that the nodes in a cluster are running
 and using the same stuff/settings. It's installed on my station.  Use `.json`
 files for building images (be careful about expenses!).
+
+
+****************
+* May 28, 2017 *
+****************
+
+OK, I managed to finally make a new account, so I get the one-year free tier
+award. Let's see how that works out for me. Now let me try Jonathan Ho's
+Evolution Strategies code. How do we use Packer again?
+
