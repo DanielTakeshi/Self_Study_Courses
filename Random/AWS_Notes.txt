@@ -174,10 +174,11 @@ A few pointers:
   November 2015 despite NOT EVER USING IT ... 
 
 
-For running on clusters, see:
+For running on *clusters*, see:
 
 http://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html
 
+<<<<<<< HEAD
 Another piece of software that might be useful is Packer. This helps me create
 identical machine images (i.e. AMIs) so that the nodes in a cluster are running
 and using the same stuff/settings. It's installed on my station.  Use `.json`
@@ -192,3 +193,55 @@ OK, I managed to finally make a new account, so I get the one-year free tier
 award. Let's see how that works out for me. Now let me try Jonathan Ho's
 Evolution Strategies code. How do we use Packer again?
 
+=======
+Packer might be useful for running on clusters. This helps me create identical
+machine images (i.e. AMIs) so that the nodes in a cluster are running and using
+the same stuff/settings. It's installed on my station.  Use `.json` files for
+building images (be careful about expenses!). These are configuration files to
+allow us to specify various settings about the image(s) we want to build. Run 
+
+    `packer build XXX.json` 
+    
+to build it. However, I think this requires two keys from AWS, which I can
+obtain online. I think I can just make them for me personally. They recommend
+creating keys separately for IAM users, but that seems to be more helpful for
+organizations with many users (kind of like computers with user accounts).
+
+NOTE: IAM = "Identity and Access Management."
+
+After running Packer's examples with my provided keys, I have a **snapshot**. It
+was a bit tricky to find. I had to search in the US-east region (N. Virginia),
+not the US-west region (N. California). Then click on "Snapshots" and I can see
+my AMI. This is **my** AMI, actually. So I'll get charged! 
+
+In addition, assuming I'm in the right region, when I launch an instance, I can
+go to "My AMIs" and I will see that image right there. (It doesn't work if I'm
+using N. California, so the lesson is that one needs to be aware of what regions
+were used!)
+
+To be clear, what got created out of this configuration file was NOT an
+"Instance," but it seems to be either an "Image --> AMIs" or an "Elastic Block
+Store --> Snapshots." Strangely, I see something underneath both of those menu
+options ... I'm not sure what's the difference. They seem to be similar, except
+AMIs are, I assume, something that's representative of a full system, whereas
+the snapshots are backups of those ... yeah, it's not clear. Maybe check this:
+
+https://serverfault.com/questions/268719/amazon-ec2-terminology-ami-vs-ebs-vs-snapshot-vs-volume?
+
+Snapshots and Volumes should be subsets or types of EBSs, which themselves look
+like hard drives. Volumes are pieces and bits of EBSs, and Snapshots are
+captures (i.e. copies) of volumes at specific times.
+
+I *think* I have an idea of what an image means. I mean, with CS 231n, they
+provide an image with specialized GPU and Deep Learning stuff. That's with the
+"Community AMIs" of course.
+
+From Packer:
+
+  > After running the above example, your AWS account now has an AMI associated
+  > with it. AMIs are stored in S3 by Amazon, so unless you want to be charged
+  > about $0.01 per month, you'll probably want to remove it. Remove the AMI by
+  > first deregistering it on the AWS AMI management page. Next, delete the
+  > associated snapshot on the AWS snapshot management page.
+
+I just did both of those.
