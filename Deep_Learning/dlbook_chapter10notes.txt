@@ -109,3 +109,184 @@ where the *output* or *hidden state* was the input to the hidden state, not the
 actual target (which is to be compared with the output).
 
 Section 10.3: Bidirectional RNNs
+
+Bidirectional RNNs help us model the output y(t) when that output may also
+*depend on future times* t+1, t+2, etc., such as with speech recognition where
+we need to peek ahead a bit. Don't use a fixed window, though, they say:
+
+> This allows the output units o(t) to compute a representation that depends on
+> both the past and the future but is most sensitive to the input values around
+> time t, without having to specify a fixed-size window around t.
+
+Nice!
+
+Section 10.4: Encoder-Decoder Sequence-to-Sequence Architectures
+
+Use these to avoid the restriction of fixed sequence sizes for the inputs x (or
+x(t)). This is their main benefit/innovation, the lengths n_x and n_y (see
+Figure 10.12 if confused on this notation) **can vary**; if the training
+data consists of a bunch of sequences that are of similar or different lengths,
+the RNN will learn to mirror that training data.  Side note: the first relevant
+paper on this (from 2014) called it "Encoder-Decoder" while the second one
+called it "Sequence-to-Sequence". I skimmed that second one, from Sutskever et
+al, NIPS 2014 last year, though maybe I should re-read it. Both papers are
+highly-cited.
+
+Connection with Section 10.2.4: we have a fixed-sized context vector C (well,
+usually) coming out of the encoder. Well, C is input to the decoder, and this is
+*precisely* the vector-to-sequence RNN architecture we talked about in that
+sub-section!
+
+How can the encoder deal with varying sizes n_x? If you think about it, it's
+just applying the RNN update over and over again to produce a fixed hidden state
+of the same size. At time t, we have processed x(1),...,x(t), and have hidden
+state h(t). (We're ignoring the earlier hidden states for simplicity.) Then the
+next time t+1, let's say that's our last one. Then we pass in h(t+1). So there's
+no issue with getting different sized inputs, because all that matters is (a)
+that we can repeatedly apply the RNN update, which is a for loop over the input
+sequence, and (b) that we take a fixed sized input to the decoder, which we can
+do with our final hidden state!
+
+Section 10.5: Deep Recurrent Neural Networks
+
+In all likelihood, I will not be dealing with these, but it might be worth
+knowing how deep we can go with RNNs, just like how I learned about the very
+deep GoogLeNet and the **ultra** deep ResNet. When we talk about depth, we mean
+adding more layers (w.r.t. the unrolled graph perspective) to the three
+components: input to hidden, hidden to hidden, and/or hidden to output. This
+might make learning hard, so one option is to introduce skip connections like
+in ResNets (man, I'm glad I reviewed ResNets).
+
+Section 10.6: Recursive Neural Networks
+
+Recursive Neural Networks, which we **do not** abbreviate as RNN, are a
+generalization of RNNs with a different computational graph "flavor" that looks
+like a tree rather than a chain.
+
+Section 10.7: Challenge of Long-Term Depenedencies
+
+Why is it hard? Here are some relevant quotes:
+
+> The basic problem is that gradients propagated over many stages tend to either
+> vanish (most of the time) or explode (rarely, but with much damage to the
+> optimization). [...] the difficulty with long-term dependencies arises from
+> the exponentially smaller weights given to long-term interactions (involving
+> the multiplication of many Jacobians) compared to short-term ones. [...]
+> Recurrent networks involve the composition of the same function multiple
+> times, once per time step. These compositions can result in extremely
+> nonlinear behavior, as illustrated in figure 10.15.
+
+This section describes the problem, and the subsequent sections (I assume 10.8
+through 10.12, judging from the LSTMs here) describe ways to solve it.
+
+They present a simplified analysis with matrix eigendecomposition, where we
+assume no activations. Then yes, gradients can explode if eigenvalues are
+greater than one or vanish if they are less than zero. Andrej Karpathy said
+something similar in his medium blog post (why does he bother with medium?).
+
+No free lunch:
+
+> One may hope that the problem can be avoided simply by staying in a region of
+> parameter space where the gradients do not vanish or explode. Unfortunately,
+> in order to store memories in a way that is robust to small perturbations, the
+> RNN must enter a region of parameter space where gradients vanish (Bengio et
+> al., 1993, 1994).
+
+It's a bit annoying that we are simplifying here by ignoring the activation
+functions, but I guess Bengio's old papers address activation functions?
+
+Section 10.8: Echo State Networks
+
+I skimmed this section. It's quite high-level and not that important to me.
+
+Section 10.9: Leaky Units, Multiple Time Scales
+
+I like this explanation:
+
+> One way to deal with long-term dependencies is to design a model that operates
+> at multiple time scales, so that some parts of the model operate at
+> fine-grained time scales and can handle small details, while other parts
+> operate at coarse time scales and transfer information from the distant past
+> to the present more efficiently.
+
+Oddly enough, they don't cite the ResNet paper?!?
+
+They can add skip connections (i.e. adding edges to the RNN). Or they can remove
+edges from the RNN, which might have similar positive effects as skip
+connections.
+
+Section 10.10: LSTMs (finally!), Gated Recurrent Unit RNNs
+
+As of this writing (2016), these two RNNs are the most effective RNNs we have
+for practical applications involving sequences.
+
+Gated Recurrent Unit (GRU):
+
+- Main idea:
+
+  > [...] gated RNNs are based on the idea of creating paths through time that
+  > have derivatives that neither vanish nor explode.
+
+- The RNN needs to *learn* when to forget and discard the past (it can't
+  remember everything, after all!).
+
+- Another quote:
+
+  > The main difference with the LSTM is that a single gating unit
+  > simultaneously controls the forgetting factor and the decision to update the
+  > state unit.
+
+Long Short-Term Memory (LSTM):
+
+- See Figure 10.16 for the block diagram. It's still very confusing despite how
+  I implemented it in CS 231n. I'm amazed that these work at all.
+
+- Like GRUs, LSTMs need to *learn* when to forget.
+
+- It uses self-loops to enable paths to flow for long durations. By flow, I mean
+  not only the forward pass, but the *backward* pass.
+
+The authors' conclusion is to simply stick with GRUs or LSTMs.
+
+Section 10.11: Optimization for Long-Term Dependencies
+
+They talk about how to improve optimization, such as with second-order methods
+and clipping gradients. (Be careful, taking the average of a bunch of clipped
+gradients means gradients that were larger have their contributions removed; see
+the discussion in the textbook.)
+
+I wouldn't put too much stock into this, though, because the authors say:
+
+> This is part of a continuing theme in machine learning that it is often much
+> easier to design a model that is easy to optimize than it is to design a more
+> powerful optimization algorithm.
+
+In fact it seems like it's easier to train LSTMs using simple SGD rather than
+use a more complicated optimization algorithm. PS: is ADAM used with RNNs?
+
+Section 10.12: Explicit Memory
+
+Philosophical quote:
+
+> Neural networks excel at storing implicit knowledge. However, they struggle to
+> memorize facts.
+
+This section introduces **Memory Networks** and **Neural Turing Machines**.
+
+For NTMs, note that:
+
+> It is difficult to optimize functions that produce exact, integer addresses.
+> To alleviate this problem, NTMs actually read to or write from many memory
+> cells simultaneously. To read, they take a weighted average of many cells. To
+> write, they modify multiple cells by different amounts
+
+Yeah, it's basically **soft attention**.
+
+Conclusion of the chapter:
+
+> Recurrent neural networks provide a way to extend deep learning to sequential
+> data. They are the last major tool in our deep learning toolbox. Our
+> discussion now moves to how to choose and use these tools and how to apply
+> them to real-world tasks.
+
+Whew!
