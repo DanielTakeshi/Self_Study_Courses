@@ -1,0 +1,111 @@
+****************************************************************
+* NOTES ON CHAPTER 10: Recurrent and Recursive Neural Networks *
+****************************************************************
+
+I need to understand the parameter sharing and how RNNs (and their variants) can
+be "combined" into other areas. The parameter sharing is key, as it allows for
+*generalization*. CNNs share parameters with the weight filters across the
+grids; RNNs share parameters across timesteps.
+
+Quick note: I think they're using minibatch sizes of 1 to simplify all notation
+and exposition here. That's fine with me. Think of x as:
+
+[ x^1 x^2 ... x^T ]
+
+where superscripts indicate time. Note that each x^i itself could be a vector!
+
+Section 10.2, Recurrent Neural Networks
+
+It's important to understand the *computational graphs* involved with RNNs. I
+understand them as directed acyclic graphs, so how does this extend with
+recurrence? It's easier to think of them when we unroll (i.e. "unfold") the
+computational graphs. See Figure 10.2 as an example (I was able to get this
+without looking at the figure). They also use a more succinct "recurrent graph"
+representation.
+
+RNN Design Patterns, also kind of described in Andrej Karpathy's blog post:
+
+- Producing an output at each time step, and having recurrent connections
+  between hidden layers. This is Figure 10.3, which I correctly predicted in
+  advance minus the loss and y stuff. They have losses for *each* time step.
+  Note the three matrix multiplies that are there, with the *same* respective
+  matrices repeated across time. Also, we're using the softmax, so assume the
+  output is discrete at each time step, e.g. o(t) could be the categorical
+  distribution over the 26 letters in the alphabet.
+
+- Same as above, except recurrent connections are from outputs to hidden layers,
+  so we still have three matrices but the "arrows" in the computational graph
+  change. This is *less powerful**. Why?? Think: the former allows hidden to
+  hidden, so the hidden stuff can be very rich. The output only lets hidden to
+  output to hidden, so the output is the input and may be less rich. That seems
+  intuitive.
+
+- Same as the first one (hidden to hidden connections) except we now have one
+  output. That's useful to summarize, such as if we're doing sequence
+  classification.
+
+Now develop the equations, e.g. f(b + Wh + Ux) where h is from the *previous*
+time step and x is the *current* time step, and f is the *activation* function.
+Yes, it's all familiar to me. They mention, though, that backpropagation is very
+expensive. They call the naive way (applying it on the unrolled computational
+graph) as "backpropagation through time."
+
+How to compute the gradient? They give us an example, thank goodness. Comments:
+
+- Note that L = L(1) + L(2) + ... + L(\tau) so yes, dL/dL(t) = 1 for all t. Each
+  L(t) is a negative log probability for that output at that time.
+
+- The next equation (10.18) also makes sense, here i is the component in the
+  vector, so we're in the univariate case.
+
+- Equation 10.19 is good, keep in mind that here we have to be careful with the
+  timestep. For other h(t), we need to add two gradients due to two incoming
+  terms (because of two *outgoing* terms in the *forward* pass). Thus, the
+  matrices V and W will be present in some form.
+
+- The next part about using dummy variables for t is slightly confusing but it
+  should just mean that the total contribution for these parameters are based on
+  their sum across each time. Yeah, looking at the book again it's just a
+  notation issue to help us out. For all those gradients, we have a final sum
+  over t, where each term in the sum is a matrix/vector of the same size as the
+  variable we're taking the gradient w.r.t.
+
+PS: when reading this, don't be confused by the notation. Look at the "notation"
+chapter online.
+
+RNNs as directed graphical models? This section is about expressing them as
+well-defined directed graphical models, and there are a few subtleties. This is
+WITHOUT any inputs, BTW ... probably just for intuition?
+
+They go through an example predicting a sequence of scalars. With the naive
+unrolled (directed) graphical model, we're applying the chain rule of
+probability and so it's very inefficient. RNNs provide better (in many metrics,
+but particularly efficiency) ways to express such distributions with directed
+graphical models by introducing deterministic connections (remember, the hidden
+states are deterministic).
+
+With RNNs, parameter sharing is a huge advantage, but the downside is that
+optimizing is hard because we make a potentially strong assumption that at each
+time step, the distribution embedded in the RNN remains stationary.
+
+The last bit here to get it into a well-defined graphical model is to figure out
+the length of the RNN. The paper presents three options, all of which seem
+obvious (though I'm ignoring lots of details, etc.).
+
+The next subsection (10.2.4) after this is about the more realistic setting of
+having x (input), so we're also modeling p(y|x). I think it's trying to stick
+with the graphical model setting. Also, note that the second option in the list
+of three things is what we did in CS 231n, Assignment 3, with the image
+captioning portion. Actually, the first option would seem better, which
+translates the input image to a vector as input to *all* hidden states, but
+that's harder to implement.
+
+I was quite confused about Figure 10.9, as to why are we considering the y(t)s
+as inputs?? However, it seems like it's because we want to model p(y|x) and,
+well, y is the ground truth. I'm just having trouble translating this to code,
+or maybe that's not what I should be doing, and instead just think of it as a
+graphical model? To think of it as code, I'd need the other case we had earlier
+where the *output* or *hidden state* was the input to the hidden state, not the
+actual target (which is to be compared with the output).
+
+Section 10.3: Bidirectional RNNs
