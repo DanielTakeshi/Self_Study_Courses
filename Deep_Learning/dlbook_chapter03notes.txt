@@ -1,0 +1,85 @@
+**********************************************************
+* NOTES ON CHAPTER 3: Probability and Information Theory *
+**********************************************************
+
+This chapter was almost pure review for me, but some highlights and insights:
+
+- The chapter starts with some philosophy and some notation. Nothing new, though
+  their notation is at least better than those from other textbooks I've read.
+  Then they talk about definitions, marginals, conditionals, etc. It might be
+  worth using their definition of covariance rather than the one I intuitively
+  think of. High covariances (absolute values) mean values change a lot and are
+  also far from their respective means often. Another concept to review:
+  independence is a stronger requirement than zero covariance. Know the
+  definition of a covariance matrix w.r.t. a random vector x.
+
+- Section 3.9: Common Probability Distributions, is pure review with the
+  exception of the Dirac Distribution (to some extent), though they mention
+  sometimes the need to use the inverse variance to increase efficiency, though
+  I doubt this is used often. Do remember why we like Gaussians: (1) the CLT,
+  and (2) out of all distributions with the same variance and which cover the
+  real line, it has the highest entropy, which can be thought of as imposing the
+  fewest prior assumptions possible. (If we didn't have these restrictions, we
+  could pick the *uniform* distribution, so be careful about the assumptions.)
+  Finally, for mixture distributions, don't forget that the canonical way is to
+  first choose a distribution, and then generate a sample from that. It is NOT,
+  first generate k samples from all k distributions in the mixture, and then
+  take a linear combination of those proportional to the probability weight. I
+  was confused by that a few years ago. The component identity of a mixture
+  model is often viewed as a **latent variable**.
+
+- Know the **logistic** function (yes) and the **softplus** function (huh, a
+  smoothed ReLU).
+
+- There is some brief **measure theory** here:
+
+  > One of the key contributions of measure theory is to provide a
+  > characterization of the set of sets that we can compute the probability of
+  > without encountering paradoxes. In this book, we only integrate over sets
+  > with relatively simple descriptions, so this aspect of measure theory never
+  > becomes a relevant concern. For our purposes, measure theory is more useful
+  > for describing theorems that apply to most points in R^n but do not apply to
+  > some corner cases.
+
+- Oh, I like their example with deterministic functions of random variables.
+  I've seen this a few time in statistics, and the key with variable
+  transformations like those is that we have to take into account different
+  scales of functions, which is where the derivative term and Jacobians appear.
+
+- Section 3.13: Information Theory. My favorite part is Figure 3.6. I should
+  spend more time thinking about it. Also, good intuition: 
+
+  > A message saying "the sun rose this morning" is so uninformative as to be
+  > unnecessary to send, but a message saying "there was a solar eclipse this
+  > morning" is very informative.
+
+  Information theory is about quantifying the "information" present in some
+  signal. Use the **Shannon entropy** to quantify the uncertainty in a
+  probability **distribution**: - E_x[log p(x)]. This is "differential entropy"
+  if x is continuous. Low entropy means the random variable is closer to
+  deterministic, high entropy means it's very random and uncertain.
+
+  Note: in most information theory contexts, the log is base 2, so we refer to
+  this as "bits." In machine learning, we use the natural logarithm, so we call
+  them "nats."
+
+  As usual, define the KL divergence. KL(P||Q) = E_P[log(P(x)/Q(x))]. For now,
+  assume the first distribution, P, is what we're drawing expectations w.r.t.
+  For discrete r.v.s:
+
+  > [KL Divergence is] the extra amount of information [...]  needed to send a
+  > message containing symbols drawn from probability distribution P, when we
+  > use a code that was designed to minimize the length of messages drawn from
+  > probability distribution Q.
+  
+  - Note also the **cross entropy** quantity: - E_P[log Q(x)].
+
+  > Minimizing the cross-entropy with respect to Q is equivalent to minimizing
+  > the KL divergence, because Q does not participate in the omitted term.
+
+  This is why if Q is our model, we can minimize the cross entropy and make our
+  Q close to P, which is the ground truth data distribution.
+
+- The chapter concludes some basic graphical models stuff.
+
+I like this chapter.
