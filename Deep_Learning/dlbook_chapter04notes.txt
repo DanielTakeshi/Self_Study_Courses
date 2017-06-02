@@ -1,0 +1,99 @@
+*****************************************
+* NOTES ON CHAPTER 4: Numerical Methods *
+*****************************************
+
+This brief chapter will probably contain more new material for me compared to
+chapters 2 and 3, but still be mostly review. Here are the highlights:
+
+- We must delicately handle implementations of the **softmax function** to
+  be robust to numerical underflow and overflow. The book amusingly just tells
+  us to rely on Deep Learning libraries, which have presumably handled all these
+  details for us.
+
+- Don't forget about a matrix's **condition number**, which when we're dealing
+  with a function f(x) = A^{-1}x, roughly tells us how "quickly" it perturbs,
+  i.e. its sensitivity. Later, they point out:
+
+  > The condition number of the Hessian at this point measures how much the
+  > second derivatives differ from each other. When the Hessian has a poor
+  > condition number, gradient descent performs poorly. This is because in one
+  > direction, the derivative increases rapidly, while in another direction, it
+  > increases slowly.
+
+- Review: the **directional derivative** of function f in direction u is the
+  derivative of the function f(x + alpha*u) evaluated at alpha=0, i.e. the slope
+  of f in direction u.
+
+- Review of Hessians, Jacobians, gradient descent, etc. The Hessian can be
+  thought of as the Jacobian of the gradient (of a function from R^n to R).
+  Also, regarding rows/columns of the Jacobians, if the function f is from R^m
+  to R^n, the Jacobian is n x m, so just remember the ordering (I doubt it is
+  strict since this is just a representation that's convenient for us, and we
+  could also take transposes if we wanted). In Deep Learning, the functions we
+  encounter almost always have symmetric Hessians. I like Equation 4.9 as it
+  emphasizes how gradient descent can sometimes overshoot the target and result
+  in a *worse* value, if the second-order term dominates.
+
+- To generalize the second derivative test (tells us a maximum, minimum, or
+  saddle point) in high dimensions, we need to analyze the eigenvalues of the
+  Hessian, e.g.:
+
+  > When the Hessian is positive definite (all its eigenvalues are positive),
+  > the point is a local minimum. This can be seen by observing that the
+  > directional second derivative in any direction must be positive, and making
+  > reference to the univariate second derivative test.
+
+  Likewise, the reverse is true when the Hessian is negative definite. Note that
+  the Hessian is a function of x (vector in R^n), so different x will result in
+  different Hessians. See Figure 4.5 for the quintessential example of a saddle
+  point.
+
+  BTW, why do the eigenvalues help us **at all**? How are they related to the
+  second derivative test in one dimension? I think it's because the second-order
+  Taylor series expansion involves a term d^THd, where d is some unit vector.
+  This is the second term that's added into the Taylor series, so its values
+  among different directions tells us the curvature. We also have an
+  eigendecomposition of H, and that provides us the eigenvalues.
+
+- We have simple gradient descent, and then the second-order (i.e. expensive!)
+  Newton's method. How do we **derive** the step size, e.g. if you're asked to
+  do so in an interview?
+  
+  - Write out f(x) using a second-order Taylor series expansion at x(0).
+  
+  - Then look at the second-order Taylor series and take the gradient w.r.t x
+    (not x(0)).
+
+  - Solve for the best x, the critical point, and plug-n-chug.
+
+  - At least, that seemed to work for me and I verified Newton's method.
+
+- In the context of Deep Learning, our functions are so complicated that we can
+  rarely provide any theoretical guarantees. We can sometimes get headway by
+  assuming Lipschitz functions, which tell us that small changes in the input
+  have quantified small changes in the function output.
+
+- Convex optimization is a very successful research field, but we can only take
+  lessons from it, we can't really use their algorithms and the importance of
+  convexity is diminished in deep learning. Constrained optimization may be
+  slightly more important. These involve the KKT conditions and Lagrange
+  multipliers, which at a high level try to design an unconstrained problem so
+  that the solution can be transformed into one for the **constrained** problem.
+  Brief comments on those:
+
+  - We rewrite the loss function by adding terms corresponding to constraints
+    h(x) = 0 and/or g(x) <= 0.
+
+  - We have min_{x in S} f(x) as our original **constrained** minimization
+    problem. However ...
+ 
+  - min_x max_{lambda} max_{alpha >= 0} L(x, lambda, alpha) has the same set of
+    solutions and optimal points!
+
+  - (Some caveats here, have to consider infinity cases, etc., but this is the
+    general idea. Any time a constraint is violated, the minimum value of the
+    Lagrangian w.r.t. x is ... infinity!)
+
+For some reason, I never feel comfortable with Lagrangians. It might be worth
+going back and reviewing Stephen Boyd's book, but I think the books' component
+was pretty clear.
