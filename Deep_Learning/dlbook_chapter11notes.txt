@@ -1,0 +1,134 @@
+**********************************************
+* NOTES ON CHAPTER 11: Practical Methodology *
+**********************************************
+
+This is sometimes neglected, but it shouldn't be! Their intro paragraph hits the
+core:
+
+> Successfully applying deep learning techniques requires more than just a good
+> knowledge of what algorithms exist and the principles that explain how they
+> work. A good machine learning practitioner also needs to know how to choose an
+> algorithm for a particular application and how to monitor and respond to
+> feedback obtained from experiments in order to improve a machine learning
+> system.
+
+Their running example is the Street View house number dataset and application,
+which is good for me since I only have minor knowledge of this material. The
+application is as follows: Cars photograph the buildings and address numbers,
+while a CNN recognizes the addresses based on photos. Then Google Maps can add
+the building to the correct location.
+
+    Section 11.1: Performance Metrics
+
+Use precision and recall in the event that a binary classification shouldn't
+treat the two cases equally, e.g. with spam detection or diagnosing diseases.
+Precision is the fraction of relevant instances classified correctly, while
+recall is the number of true relevant instances detected. A disease detector
+saying that everyone has the disease has perfect recall, but very small
+precision, equal to the actual fraction who have diseases. We can draw a PR
+curve, or use a scalar metric such as **F-scores** or **AUC**.
+
+    Section 11.2: Default Baseline Models
+
+This depends on the problem setting. Copy over previous work if possible.
+
+Start small-scale at first, with regularization and **early stopping**. (I
+forgot to do this for one project before adding it, and I'm glad I did.)
+
+Most of this should be obvious.
+
+    Section 11.3: More Data?
+
+Regarding when to add more data, they suggest:
+
+> If the performance on the test set is also acceptable, then there is nothing
+> left to be done. If test set performance is much worse than training set
+> performance, then gathering more data is one of the most effective solutions.
+> [... after some regularization discussion ...] If you find that the gap
+> between train and test performance is still unacceptable even after tuning the
+> regularization hyperparameters, then gathering more data is advisable.
+
+Of course, in some domains such as medical applications, gathering data can be
+costly. Again, this is obvious.
+
+    Section 11.4: Hyperparameters
+
+Do these manually or automatically. The manual version places special emphasis
+on finding a model with the right effective capacity for the problem at hand.
+
+As a function of a hyperparameter value, generalization curves often follow a
+U-shaped curve, with the optimal value somewhere in the middle. At the smaller
+end, we may have low capacity (and thus underfitting) and the other end may have
+high capacity (and thus overfitting). Though that depends on the low/high
+capacity assumption. Maybe this hyperparameter graph would be based on the
+hyperparameter of the total number of layers in a neural network. This is just
+an example, though. For applying weight decay, the curve might still be
+U-shaped, but the underfitting happens with high values, the overfitting happens
+with smaller values.
+
+Their main advice, and the one which agrees with my own experience, is that if
+there is ANY hyperparameter to tune, it should be the learning rate. Why? The
+effective capacity of the model is highest ... for a **correct** learning rate.
+Not when it's too large or too small. In general, the learning rate's **training
+error* curve decreases as it gets high enough ... then once it's barely too
+high, it SHOOTS UP, due to taking too large steps during gradient updates.
+
+What happens if your training error is worse than expected? Your best bet is to
+increase capacity. Especially with Deep Learning, we should be able to overfit
+to most training datasets, so try without regularization techniques.
+
+If the test error is worse than training, then the reason (at least with Deep
+Learning models with high capacity) is most likely due to generalization
+difference between test vs train error. Try regularization techniques.
+
+I **really like Table 11.1**, it outlines the effects of changing different
+hyperparameters. Study it well! Though I think I understood all of them; the one
+that might be newest to me is weight decay, but fortunately I somewhat
+understand it after reading through OpenAI's Evolution Strategies code.
+
+OK, next, **automatic hyperparameter search**. This includes **grid search**,
+best when we have three or fewer hyperparameters and we can test all points in
+the Cartesian product of the set of values. **Random search** can be better, as
+I know from CS 294-129. See Figure 11.2 for a comparison of grid search and
+random search. 
+
+Typically, grid search values are chosen based on a logarithmic scale, or
+"trying every order of magnitude." If the best values are on a boundary point,
+shift the grid search. Sometimes we have to do coarse-to-fine, as Andrej
+Karpathy puts it. Random search can be cheaper and often more effective. Here,
+we have a marginal probability distribution for each hyperparameter, which we
+sample from to get hyperparameters. (Be careful about non-uniform distributions
+if we want to sample from a logarithmic scale, e.g.  for learning rates that are
+10^{-x}, we would do a uniform distribution sample on x.) Random search is more
+effective when there are hyperparameters which do not strongly affect the
+performance metric, which are considered wasteful for grid search.
+
+The section concludes on Bayesian hyperparameter optimization, but the authors
+conclude that this isn't relatively helpful for Deep Learning.
+
+    Section 11.5: Debugging
+
+This is hard. :(
+
+Their example of an especially challenging bug is if the bias gradient update is
+slightly off. Then the other weights might actually be able to compensate for
+the error, to some extent. This is why you need a finite difference check, as we
+did for CS 231n, or use TensorFlow.
+
+Visualize the model in action, visualize the worst cases, **fit a tiny dataset**
+(which I do), etc. Also, monitor histograms of activations and gradients, which
+might help detect gradient saturation.
+
+Yeah, actually I *do* use a lot of these techniques, though maybe I should have
+those histograms somewhat?
+
+Oh, they say that the magnitude of parameter updates should be roughly 1% of the
+magnitude of the parameters themselves. In some recent work, I see 5% for this
+quantity. Maybe I should aim to get that reduced?
+
+    Section 11.6: Example of Multi-Digit Recognition
+
+Looks interesting. Here, coverage was the metric to optimize while fixing
+accuracy to be 98%. (Thus, accuracy is more important.) They got a LOT of
+improvement simply by looking at the worst cases and seeing that there was
+unnecessary cropping.
