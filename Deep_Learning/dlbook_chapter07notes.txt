@@ -1,0 +1,130 @@
+*********************************************
+* NOTES ON CHAPTER 7: Regularization for DL *
+*********************************************
+
+Again, this will be mostly review.
+
+Section 7.1: Parameter Norm Penalties. 
+
+One piece of intuition is that biases don't need to be regularized because they
+control one variable, whereas other weights control two (I guess the two nodes
+in their edges?).
+
+Good review for me, look at the math in Section 7.1.1 about L2 regularization.
+Assuming a quadratic cost function, we can show that weight decay rescales the
+optimal weight vector along the **axes** defined by the **eigenvectors** of H,
+the Hessian. This is good linear algebra review. Understand Figure 7.1 as well!
+
+TODO: review the L1 regularization section. I must have seen this before but I
+can't remember, and it'd be good to know. But the TL;DR is that L1 encourages
+more sparsity compared to L2, so certain features can be discarded.
+
+(Some of the next sections are quite short and I didn't take notes. One insight
+is that the definition of the Moore-Penrose pseudoinverse looks like a
+regularization formula, with weight decay!)
+
+Other regularization strategies:
+
+- Dataset Augmentation, useful for object recognition, but be careful not to,
+  e.g. flip the images if we're doing optical character recognition, since the
+  classes could be altered. Be careful to augment *after* the train/test split,
+  and also that when comparing benchmarks, that algorithms use the same
+  augmentation.
+
+- Add noise directly to weights, sometimes seen in RNNs, or the targets, as in
+  **label smoothing**.
+
+- Semi-Supervised Learning. Use both p(x) and p(x,y) to determine p(y|x).
+  Example: PCA for the "unsupervised" projection to an "easier" space, and then
+  a classifier built on top of that, so PCA is a pre-processing step. Yeah,
+  makes some sense.
+
+- Multi-Task Learning. Think of this as different tasks having the same input
+  but different output, **AND** having a common "intermediate" step, or latent
+  factor. We need that last condition because otherwise we're not sharing
+  parameters across tasks (i.e. across different targets). I haven't really done
+  much work with multi-task learning, but I bet I will in the future!
+
+- Early Stopping. Ah yes, this sounds dumb but it works. Often, training error
+  will continue decreasing and asymptote somewhere, but our validation error can
+  decrease initially, but then **increase**. We want to stop and return the
+  weights we had at the time just before the validation error began to increase.
+  Huh, the authors even say it's the most popular form of regularization, I
+  guess because it comes naturally to beginners. There's some slight costs to
+  (a) testing on the validation set, and (b) storing weights periodically, but
+  from my experience those are minor. They continue to elaborate that if we want
+  to use the validation set, we can do early stopping, *then* include all the
+  data. (This seems overkill to me.) They conclude early stopping by showing
+  mathematically how it acts as a regularizer.
+
+- Parameter Tying and Parameter Sharing. These try to make certain parameters
+  close to each other, so the regularizer could be || w(a) - w(b) ||_2 where
+  w(a) and w(b) are weights in two different layers. However, I think the more
+  popular view is to have them be **equal**, and hence have parameter
+  **sharing** instead of tying, which has the added advantage of memory savings.
+  This is precisely what happens in CNNs (and RNNs!).
+
+- Sparse Representations. Here, for some reason, we're focused on
+  **representational sparsity**. This means our DATA is considered to have a new
+  representation which is sparse. This is *not* the same as **parameter
+  sparsity**, which the L1 regularization on the parameters would have enforced.
+  This arises out of putting penalties on the activations in the NN. However,
+  I'm not really sure I follow this and it doesn't seem to be as important as
+  other techniques.
+
+- Bagging and Ensembles. Train several different models (independently), then
+  have them vote. It works well when the models do not make the same test
+  errors. We can quantify this mathematically by computing the expected error
+  and expected squared error. One way to do this is with bagging, which will
+  sample k different **datasets**, formed by sampling with replacement the
+  original data, so with high probability we'll get different datasets each time
+  (with some data points repeated, of course, and others missing).
+
+- Dropout. This can be viewed as noise injection, FYI, **and** as a form of
+  bagging and ensemble learning. Man, it's really clever. PS: remember how it
+  works, we remove (non-output!) **units**, NOT the edges (though it could be
+  done that way, I think). Edges are automatically removed when their units are
+  removed. In code, of course, we just multiply by zero. Remember:
+
+  > Each time we load an example into a minibatch, we randomly sample a
+  > different binary mask to apply to all of the input and hidden units in the
+  > network. The mask for each unit is sampled independently from all of the
+  > others. The probability of sampling a mask value of one (causing a unit to
+  > be included) is a hyperparameter fixed before training begins. It is not a
+  > function of the current value of the model parameters or the input example.
+
+  There is some discussion about how to predict or do inference with ensemble
+  methods. The authors mention some obscure geometric mean trick, but
+  fortunately, with dropout we can do one forward pass and scale by the dropout
+  parameter. (Or we can avoid this, but divide by the dropout during training,
+  as I know.)
+
+  This is actually **not** exact even in expectation, due to the
+  non-linearities, but it works well in practice.
+
+  Dropout goes beyond regularization interpretations:
+
+  > [...] there is another view of dropout that goes further than this. Dropout
+  > trains not just a bagged ensemble of models, but an ensemble of models that
+  > share hidden units. This means each hidden unit must be able to perform well
+  > regardless of which other hidden units are in the model.
+
+  It looks like we have redundancy, which is good.
+
+- Adversarial Training. You knew this was coming. :) We get those adversarial
+  examples, and then use that to improve our classifier. See Goodfellow's papers
+  for details. There are caveats, though, and I believe even with training on
+  adversarial examples, such a model still has *new* adversarial examples. I
+  might have to re-read those papers.  Goodfellow showed that one cause for
+  adversarial examples is excessive linearity. They can also be considered
+  semi-supervised learning, which we talked about earlier in the chapter.
+
+- Tangent {Distance, Prop, Manifold Classifier}. These relate to our assumption
+  that the essence of the data lie in lower-dimensional manifolds. The
+  regularization here is that f(x) shouldn't change much as x moves along its
+  manifold. I don't really think these are important for me to know right now,
+  but I remember studying these a bit for the prelims.
+
+Whew, some of these were new actually, or at the very least I got a better
+understanding of them. Note that batch normalization (which might make dropout
+unnecessary) is discussed in the **next** chapter, not this one.
