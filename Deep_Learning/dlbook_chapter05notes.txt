@@ -1,0 +1,167 @@
+***********************************************
+* NOTES ON CHAPTER 5: Machine Learning Basics *
+***********************************************
+
+Again, I expect that this will be almost entirely review. Here are some stuff
+which I didn't already have down cold:
+
+- The chapter starts off with Tom Mitchell's famous definition of machine
+  learning, and then it goes through examples of tasks, experiences, and
+  performance metrics. There isn't a whole lot new here. Maybe a good insight is
+  to think of the tasks of (a) density estimation and (b) synthesis/sampling
+  (e.g. with GANs) as the task of modeling densities implicitly (a) versus
+  implicitly (b). Then for experiences, the key is to understand unsupervised
+  vs. supervised learning, but the line between the categories is blurred, and I
+  like their examples of how the problems can be converted to each other
+  (Equations 5.1 and 5.2). Think of unsupervised as estimating p(x), supervised
+  as estimating p(y|x), since we have our labels y in the latter case. They use
+  linear regression as an example, and the "learning algorithm" consists of
+  literally solving the normal equations. One step, no iterative updates!
+
+- We can use statistical learning theory to tell us how algorithms generalize.
+  It's easiest if we assume IID, then the train/test errors are equal under
+  expectation **if we chose a random model**, i.e random weights. In general,
+  though, we optimize the training error, and **then** test, so the test error
+  is at least as high as training error. The two central factors contributing to
+  under/over-fitting are (1) training error, (2) gap between training and
+  testing error. (This is covered again later in Chapter 11 on practical usage.)
+  We can partially control under/over-fitting by controlling a model's
+  **capacity**. E.g., for linear regression, add higher order terms, and
+  capacity increases, but overfitting occurs with more parameters than examples.
+
+- Quantifying model capacity with classical measures, such as VC dimension, is
+  rarely used in Deep Learning.
+
+- We can also think of **non-parametric** models as having arbitrarily high
+  capacity. However, practical algorithms will rely on some form of constraints,
+  e.g. nearest neighbors' complexity depends on the data.
+
+- **Expected** generalization can never increase when training data increases.
+
+- Use **weight decay** (i.e. L2 regularization) to prefer lower magnitude weight
+  vectors as solutions.
+
+- With hyperparameters, don't tune then on the training data because that will
+  cause preference towards overfitting. Tune on **validation sets**. If our data
+  is too small, **use k-fold cross validation** to get better estimates of
+  generalization error.
+
+- With bias/variance discussion, don't forget that the sample variance (for
+  Gaussians) is actually **biased**, we need the n-1 correction for the
+  **unbiased** version.
+
+- Don't forget the difference between **variance** and **standard error** w.r.t.
+  **an estimator**. Here, the standard error is the square root of the variance,
+  and both are computed based on empirical data (which is why I don't think we
+  call it "standard deviation"). They say:
+
+  > Unfortunately, neither the square root of the sample variance nor the square
+  > root of the unbiased estimator of the variance provide an unbiased estimate
+  > of the standard deviation. Both approaches tend to underestimate the true
+  > standard deviation, but are still used in practice. The square root of the
+  > unbiased estimator of the variance is less of an underestimate. For large m,
+  > the approximation is quite reasonable.
+
+  We use standard error often when writing out confidence intervals.
+
+  They argue that increasing model capacity (at least under MSE for computing
+  generalization error) generally increases **variance** but decreases **bias**.
+  The reason is that variance here is based on samples where the "samples" are
+  in fact training data sets. (The training set **is** the random variable,
+  according to their Equation 5.47 definition.) Thus, with a new sample of the
+  training data, we'll get different results since the model overfits. But under
+  **expectation** over all draws of training datsets, the bias is low.
+
+- How did we **obtain** the estimators we just talked about? It's simple, MLE.
+  And before reading Goodfellow's tutorial on GANs, I don't think I viewed MLE
+  as minimizing a KL divergence. This is yet another reason why we like it.
+  Another reason is, as I know from the AI prelims review, the MLE view of
+  **conditional** log likelihood, where p(y|x) is modeled as a Gaussian, results
+  in the same solution (obtained via maximizing likelihood) as the linear
+  regression case with MSE loss.
+
+- Then the chapter talks about **Bayesian statistics**. To measure uncertainty
+  of the estimator, the Frequentist approach uses the variance, but the Bayesian
+  approach suggests to integrate instead. I also remember their example with
+  Bayesian linear regression, we have to combine p(y|X,w)*p(w) but those are
+  both exponentials and they multiply to result in another exponential which can
+  be rearranged in the form of another Gaussian. If we want a single point
+  estimate instead of a distribution, use **MAP estimates**. But why not just do
+  the Frequentist MLE approach? Because MAP estimates retain *some* benefit of
+  the Bayesian approach. That's the intuition, I guess.
+
+- Review: 
+
+  theta_MAP =       argmax_theta p(theta|x) 
+            \propto argmax_theta p(theta)p(x|theta)
+            =       argmax_theta log p(theta) + log p(x|theta)
+  
+  (and for the MLE Gaussian, Frequentist case)
+
+  theta_ML = argmax_\theta \prod_y p(y|x,theta)
+           = argmax_\theta \sum_i \log p(y_i|x_i,\theta) // These are Gaussians
+
+- **Supervised Learning Algorithms**. The authors start by generalizing linear
+  regression into logistic regression, as expected. Not much new here. With
+  logistic regression, we no longer have a closed-form solution for the optimal
+  weights, which is why gradient descent helps.
+  
+  - PS: Don't forget **SVMs**. I've forgotten some of it due to its lack of
+    exposure in Deep Learning. The key innovation here is the kernel trick, of
+    course (helps us model nonlinear x, and highly efficient). The SVM function
+    is nonlinear w.r.t. the data, but it's **linear** w.r.t the coefficients
+    \alpha. The \alpha here is mostly zeros, so as to reflect only points on the
+    boundary close to the current sample of interest.
+
+  - But note that SVMs and kernel machines in general struggle to generalize
+    well, and Deep Learning is precisely designed to improve upon that.
+
+  - Another common algorithm, **k-nearest neighbors**. In fact, there is not
+    even a training or a learning stage for this (nonparametric) method. Yet
+    another one, **decision trees**.
+
+  - Note, p.144 missing a figure in my PDF version? TODO check.
+ 
+- **Unsupervised Learning Algorithms**. Examples: PCA and K-Means Clustering.
+  PCA can be viewed as a data compression algorithm, or one which learns a
+  "useful" representation of data (perhaps as "simple" as possible, to identify
+  independent sources of variation which capture the essence of the data). This
+  means using PCA to transform the data so that the covariance matrix of the
+  transformed data is a diagonal matrix. PCA:
+
+  > This ability of PCA to transform data into a representation where the
+  > elements are mutually uncorrelated is a very important property of PCA. It
+  > is a simple example of a representation that attempts to disentangle the
+  > unknown factors of variation underlying the data.
+
+  Then there's k-means, which learns a one-hot encoding for each sample. This is
+  a bit extreme, though. The learning, of course, works like EM.
+
+- Stochastic Gradient Descent. The main workhorse of Deep Learning! It helps
+  that our cost functions naturally decompose into a sum over training examples
+  with per-sample loss (and taking the empirical mean of those, so it's an
+  expectation!!!). Thus, take a minibatch sum of those terms. In fact, we can
+  often converge to a good solution even without touching every element in the
+  dataset (i.e. less than a single pass).
+
+- Section 5.11, which focuses specifically on Deep Learning challenges. DL helps
+  to deal with the curse of dimensionality (PS: nice visuals in Figure 5.9!).
+  They also help with local constancy and smoothness, meaning that we want f(x)
+  to be approximately f(x+eps). Most classical algorithms try to follow this
+  implicit prior, but the problem is that it doesn't scale to larger datasets
+  because it requires enough examples to observe the data space. With DL, we try
+  and introduce dependencies among different regions, using a "composition of
+  factors". See Chapters 6 and 15 for this. Oh yeah, this is the idea of DL with
+  hierarchies of features ... I can see where this is going.
+
+  The last bit here is about manifold learning. We use it informally in machine
+  learning to indicate a set of points that are well-connected or associated
+  with each other in a lower-dimensional space. With high dimensions, it's
+  essential to assume that most points in R^n are invalid. The authors argue
+  that this is the case in terms of images, sounds, and text. For instance,
+  uniformly sampling points in image results in static, and random words/letters
+  mean gibberish instead of interesting sentences. It would be great if learning
+  algorithms could *discover* these manifolds. In fact, GANs help us with that!
+
+  (This is a bit hand-way, make sure to re-read this section if I want to
+  refresh my memory.)
