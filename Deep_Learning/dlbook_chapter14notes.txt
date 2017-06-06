@@ -1,0 +1,100 @@
+*************************************
+* NOTES ON CHAPTER 14: Autoencoders *
+*************************************
+
+Let's review this and discuss with John Canny.
+
+The introduction is excellent, and matches with my intuition. I agree that an
+encoder is like doing dimension reduction, and it certainly seems like decoders
+(the reverse direction) can be used for generating things, hence they can be
+used within *generative* models. (A.K.A. VAEs!) 
+
+They mention "recirculation" as a more biologically realistic (!!) alternative
+to backpropagation, but it is not used much.
+
+Think of them as optimizing this simple thing: 
+
+    min_{f,g} L(x, g(f(x))
+
+where x is the whole dataset, and f and g are the encoder and decoder,
+respectively.
+
+We need to make sure the autoenconder is constrained somehow ("undercomplete")
+so that it isn't simply performing the identity function. Solutions: don't
+provide too much capacity to the hidden layers, or regularize.
+
+Confusing point: think of autoencoders as "approximating maximum likelihood
+training of a generative model that has latent variables." Why?'
+
+- The prior is not over the "belief on our parameters before seeing data" but
+  the hidden units (which are latent variables).
+- I don't know what they mean by "the autoencoder as approximating this sum with
+  a point estimate for just one highly likely value for h" but let's not
+  over-worry about this.
+
+Yeah, let's get back to this later.
+
+Denoising Autoencoders: clever! =) Rather than using g(f(x)) in the loss
+function, use g(f(\tilde{x})) where \tilde{x} is perturbed! This is a creative
+way to avoid the autoencoder simply learning the identity function.
+
+One can also regularize by limiting the derivatives, i.e. a "contractive
+autoencoder."
+
+I've wondered about the exact size of autoencoders in use nowadays, since I
+haven't seen a figure before. The encoder and decoder are themselves each feed
+forward neural networks, so in general, it seems like each can be implemented
+with many layers (or just one).
+
+Stochastic Encoders and Decoders: not sure I got much out of this. However, I
+did get this: the decoder can be seen as optimizing log p(x|h), since it is
+given h and has to produce x (and x is known!). But the analogue for the encoder
+is more confusing, because we have log p(h|x) but we don't know h. This must be
+similar to other latent variables in graphical models.
+
+Denoising autoencoders: OK, their computational graph (Figure 14.3) makes sense.
+(It doesn't really help me get a deep understanding, though.) They introduce a
+corruption function C(\tilde{x} | x), whose function is obvious. I was confused
+for a bit as to why we're assuming we know the x (I mean, in real life, we might
+be given *only* noisy stuff) but if we don't have the real x, we can't evaluate
+the loss function! 
+
+Unfortunately, I don't follow Figure 14.4, and some of the discussion here (e.g.
+connecting autoencoders with RBMs) just refers to reading research papers. =(
+That's why I am reading this textbook, to *avoid* reading those
+difficult-to-understand papers. Why is the corrupted stuff on a higher
+dimensional manifold? 
+
+EDIT: Hmmm ... maybe because training data, as they mention in Section 14.6,
+tend to come from lower-dimensional manifolds? If we corrupt ourselves, we have
+a lot of control and can make the result quite different.
+
+OK, back to more obvious stuff:
+
+> Denoising autoencoders are, in some sense, just MLPs trained to denoise.
+> However, the name "denoising autoencoder" refers to a model that is intended
+> not merely to learn to denoise its input but to learn a good internal
+> representation as a side effect of learning to denoise.
+
+Manifolds! (Section 14.6)
+
+Key reason why we think about this:
+
+> Like many other machine learning algorithms, autoencoders exploit the idea
+> that data concentrates around a low-dimensional manifold or a small set of
+> such manifolds, as described in section 5.11.3.
+
+[Might want to read Chapter 5 !!! Well, I'm planning to finish reading the
+entire book in the summer anyway.]
+
+Here, autoencoders are designed to LEARN the manifold.
+
+Figure 14.7, what does it mean? TODO
+
+Contractive Autoencoders (Section 14.7)
+
+Figure 14.10, what does it mean? TODO
+
+Other stuff:
+
+TODO

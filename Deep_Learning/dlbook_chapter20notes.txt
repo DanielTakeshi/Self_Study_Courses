@@ -1,0 +1,22 @@
+***********************************************
+* NOTES ON CHAPTER 20: Deep Generative Models *
+***********************************************
+
+This is a long chapter, and likely contains most of the stuff at the research
+frontiers, at least those that interest the authors (i.e. Generative Adversarial
+Networks).
+
+
+Section 20.10.4: Generative Adversarial Networks
+
+Use this loss function formulation for the Generator:
+
+> In this best-performing formulation, the generator aims to increase the log
+> probability that the discriminator makes a mistake, rather than aiming to
+> decrease the log probability that the discriminator makes the correct
+> prediction.
+
+Yes, I tried this for my own work and have had better results with this
+technique. It seems to be more important to do this than to do one-sided label
+smoothing, batch normalization, etc., which makes sense as this was the rare
+"trick" that made it in the original 2014 NIPS paper.
