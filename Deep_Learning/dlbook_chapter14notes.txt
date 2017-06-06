@@ -12,7 +12,7 @@ used within *generative* models. (A.K.A. VAEs!)
 They mention "recirculation" as a more biologically realistic (!!) alternative
 to backpropagation, but it is not used much.
 
-Think of them as optimizing this simple thing: 
+Think of AEs as optimizing this simple thing: 
 
     min_{f,g} L(x, g(f(x))
 
@@ -21,18 +21,22 @@ respectively.
 
 We need to make sure the autoenconder is constrained somehow ("undercomplete")
 so that it isn't simply performing the identity function. Solutions: don't
-provide too much capacity to the hidden layers, or regularize.
+provide too much capacity to both (a) the hidden code and (b) either of the two
+networks, and *regularize* somehow. Also, don't just make things linear, because
+then it's doing nothing more than PCA.
 
 Confusing point: think of autoencoders as "approximating maximum likelihood
-training of a generative model that has latent variables." Why?'
+training of a generative model that has latent variables." Why?
 
 - The prior is not over the "belief on our parameters before seeing data" but
-  the hidden units (which are latent variables).
+  the hidden units (which are latent variables). Yes, this aspect make sense.
 - I don't know what they mean by "the autoencoder as approximating this sum with
   a point estimate for just one highly likely value for h" but let's not
   over-worry about this.
 
-Yeah, let's get back to this later.
+(This was in the discussion about sparse autoencoders, and it makes a little
+more sense to me after reading about VAEs. The point is that `h` is a latent
+variable.)
 
 Denoising Autoencoders: clever! =) Rather than using g(f(x)) in the loss
 function, use g(f(\tilde{x})) where \tilde{x} is perturbed! This is a creative
@@ -50,24 +54,33 @@ Stochastic Encoders and Decoders: not sure I got much out of this. However, I
 did get this: the decoder can be seen as optimizing log p(x|h), since it is
 given h and has to produce x (and x is known!). But the analogue for the encoder
 is more confusing, because we have log p(h|x) but we don't know h. This must be
-similar to other latent variables in graphical models.
+similar to other latent variables in graphical models. 
+
+    **Update**: after reading this again with more knowledge of how these work,
+    I think I didn't get the point of the last section. The log p(x|h) is indeed
+    what the decoder optimizes, though (1) it really optimizes the encoder as
+    well when this is trained end-to-end since the encoder produces h, and (2)
+    we have to provide the loss function, and (3) we can **also** add a
+    distribution to the encoder, but I don't think this is actually needed to
+    train the encoder portion. In the case of continuous-valued pixels, we
+    should probably consider a Gaussian distribution for the loss, which means
+    the autoencoder should try and get the mean/variance. In VAEs, we can take
+    advantage of the Gaussian assumption to *sample* elements.
 
 Denoising autoencoders: OK, their computational graph (Figure 14.3) makes sense.
 (It doesn't really help me get a deep understanding, though.) They introduce a
 corruption function C(\tilde{x} | x), whose function is obvious. I was confused
 for a bit as to why we're assuming we know the x (I mean, in real life, we might
 be given *only* noisy stuff) but if we don't have the real x, we can't evaluate
-the loss function! 
+the loss function!  It's just part of our training data.
 
-Unfortunately, I don't follow Figure 14.4, and some of the discussion here (e.g.
-connecting autoencoders with RBMs) just refers to reading research papers. =(
-That's why I am reading this textbook, to *avoid* reading those
-difficult-to-understand papers. Why is the corrupted stuff on a higher
-dimensional manifold? 
-
-EDIT: Hmmm ... maybe because training data, as they mention in Section 14.6,
-tend to come from lower-dimensional manifolds? If we corrupt ourselves, we have
-a lot of control and can make the result quite different.
+Figure 14.4 makes sense intuitively. Corrupted stuff is off the manifold because
+if we take an average random sample, it'll be in some random space. But **real**
+samples are in a manifold. Unfortunately, some of the discussion here (e.g.
+connecting autoencoders with RBMs) just refers to reading papers. =( That's why
+I am reading this textbook, to *avoid* reading difficult-to-understand papers.
+There's also some discussion on estimating the score function, which I think I
+understand but haven't grokked it.
 
 OK, back to more obvious stuff:
 
@@ -76,25 +89,38 @@ OK, back to more obvious stuff:
 > not merely to learn to denoise its input but to learn a good internal
 > representation as a side effect of learning to denoise.
 
-Manifolds! (Section 14.6)
-
-Key reason why we think about this:
+Manifolds! (Section 14.6) Key reason why we think about this (emphasis mine):
 
 > Like many other machine learning algorithms, autoencoders exploit the idea
 > that data concentrates around a low-dimensional manifold or a small set of
-> such manifolds, as described in section 5.11.3.
+> such manifolds, as described in section 5.11.3. [...] Autoencoders take this
+> idea further and aim to **learn the structure of the manifold**.
 
-[Might want to read Chapter 5 !!! Well, I'm planning to finish reading the
-entire book in the summer anyway.]
+Additional thoughts:
 
-Here, autoencoders are designed to LEARN the manifold.
+- Understand **tangent planes**, these describe the direction of allowed
+  variation for a point x while still remaining on the low-dim manifold. See
+  Figure 14.6 for an intuitive example with MNIST, showing points on this
+  manifold and also the allowable directions.
 
-Figure 14.7, what does it mean? TODO
+- Intuitively, autoencoders need to learn how to represent this variation among
+  the manifold.  However, they don't need to do this for points off the
+  manifold. See Figure 14.7. The reconstruction is flat near the manifold
+  points, i.e. the only area that matters. True, it jumps up at several points,
+  but those are well off the manifold.
 
-Contractive Autoencoders (Section 14.7)
+- There are other ways we can learn manifold structure, using non-Deep
+  Learning techniques (see Figures 14.8 and 14.9), but I don't think these are
+  as important to know now.
 
-Figure 14.10, what does it mean? TODO
+Contractive Autoencoders (Section 14.7) introduce a regularizer to make the
+derivatives of f (as in, f(x) = h) small.
 
-Other stuff:
+What are applications of autoencoders? Definitely dimensionality reduction is
+one, and we can also think about information retrieval, the task of finding
+entries in a database that resemble a query entry. Why? Search is more efficient
+in lower-dimensional spaces.
 
-TODO
+Overall, I actually think this chapter is among the weaker ones in the book.
+Looking through the CS 231n slides was a **lot** more helpful. Eh, not every
+chapter is perfect.
