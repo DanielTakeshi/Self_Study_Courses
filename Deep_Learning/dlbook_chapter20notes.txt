@@ -2,12 +2,55 @@
 * NOTES ON CHAPTER 20: Deep Generative Models *
 ***********************************************
 
-This is a long chapter, and likely contains most of the stuff at the research
-frontiers, at least those that interest the authors (i.e. Generative Adversarial
-Networks).
+This is a **long** chapter, and likely contains most of the stuff at the
+research frontiers, at least those that interest the authors (Generative
+Adversarial Networks lol).
 
 
-Section 20.10.4: Generative Adversarial Networks
+    Section 20.10: Directed Generative Nets
+
+Both VAEs and GANs are part of this section, which refers to using directed
+graphical models to "generate" something, or basically mirror a probability
+distribution. The first two sections, "Sigmoid Belief Nets" and "Differentiable
+Generator Nets" seem markedly less important, though the latter at least makes
+the point that a generator should be differentiable. It also makes the important
+distinction between a generator directly generating samples x, OR generating a
+DISTRIBUTION, which we then sample from for x. If we directly generate discrete
+values, the generator is not differentiable, FYI.
+
+
+    Section 20.10.3: Variational Autoencoders
+
+- Trained purely with gradient methods.
+
+- To *generate* a sample, need to first sample a code z which has relevant
+  latent factors, and then run through a generator ("decoder") network which
+  will give us a mean vector (or maybe a second output with the covariance). We
+  then sample from that Gaussian.  Yes, this makes sense.  Generating z may just
+  be done with our prior.
+
+- Ah, but during training, we have to make use of our *encoder* network, since
+  otherwise the generator/decoder wouldn't work well.  The encoder network's job
+  is to produce a useful z.
+  
+- Training is done by maximizing that variational lower bound for each data x:
+
+    L(q) <= log p_model(x)
+
+  where q is the distribution of the encoder network. Essentially, the encoder
+  network approximates an intractable integral!
+
+- Some downsides: VAEs output somewhat blurry images and do not fully utilize
+  the latent code z. However, GANs seem to share that second problem.
+
+- VAEs have been extended in many ways, e.g. DRAW. I remember that paper when I
+  read it half a semester ago, but that was before I had RNN intuition.
+
+- Advantage: the training process is basically training an autoencoder. Thus, it
+  can learn a manifold structure since that's what autoencoders can do!
+
+
+    Section 20.10.4: Generative Adversarial Networks
 
 Use this loss function formulation for the Generator:
 
@@ -20,3 +63,20 @@ Yes, I tried this for my own work and have had better results with this
 technique. It seems to be more important to do this than to do one-sided label
 smoothing, batch normalization, etc., which makes sense as this was the rare
 "trick" that made it in the original 2014 NIPS paper.
+
+- Then Sections 20.10.5 through 20.10.10 go through more topics that I don't
+  have time to learn.
+
+
+    Section 20.14: Evaluating Generative Models
+
+Yeah, I had a feeling this would be here, because some of this is quite
+subjective, and it seems like we have to resort to hiring human workers in
+person or via Amazon Mechanical Turk. The authors make a good point that in
+object recognition (for instance) we can alter the input. Some networks
+downscale to 256x256, others to 227x227, etc., but with generative models, if
+you change the input, the task fundamentally changes, and thus we can't compare
+the two procedures. Oh, and they also point out differences in log p(x) if x is
+discrete r.v. or continuous, in which case the former maximizes at log 1 = 0 and
+the latter can be arbitrarily high since p(x) could theoretically approach
+infinity.

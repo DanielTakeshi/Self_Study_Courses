@@ -1,0 +1,80 @@
+**********************************************
+* NOTES ON CHAPTER 9: Convolutional Networks *
+**********************************************
+
+This chapter should be review for me, but I do want to get clarification about
+(a) visualizing gradients/filters and (b) the "deconvolution" or "transpose
+convolution" operator. To a lesser extent, I'm interested in (c) how to
+implement efficient convolutions.
+
+- There is some stuff about whether we care about kernel flipping or not.
+  However, this seems to be very specific about the convolution formula, and I
+  doubt I'm going to go in detail on that since I'm not implementing them.
+
+- Understand why convolutions are so important: (1) **sparse interactions**, (2)
+  **parameter sharing** and (3) **equivariant representations**. I know all of
+  these, and to be clear on the last one, it's because we often want to
+  represent the same shapes but in different locations in a grid. The book says
+  "To say a function is equivariant means that if the input changes, the output
+  changes in the same way" so maybe they're using a slightly different
+  perspective. The first two together are mainly about the storage and
+  efficiency improvements.  The third doesn't apply to all transformations (for
+  CNNs at least), but it definitely applies for translation.
+
+- In the pooling description (Section 9.3) the authors say non-linearities come
+  **before** pooling and **after** convolutions. Indeed, this matches the
+  ordering of the CNNs we wrote in CS 294-129. Intuitively, we already do a
+  maximum operator in the standard 2x2 max pool, so why apply a ReLU **after**
+  that? The major advantage of pooling is to make the network **invariant to
+  slight transformations**. It also helps to reduce data dimensionality,
+  particularly if we also padded the convolutions (and so the convolution layers
+  do *not* reduce data dimensionality, but can leave that job for the pooling).
+
+- Interesting perspective: Section 9.4 explains why convolutions and pooling can
+  be viewed as an infinitely strong prior. I can see why (beforehand) since
+  these strongly assume the input is some grid-like thing, as an image. (A weak
+  prior has high entropy, like a uniform distribution or a Gaussian) Be careful:
+
+  > If a task relies on preserving precise spatial information, then using
+  > pooling on all features can increase the training error.
+
+  (This is an example of how architectures need to be tweaked for the task.)
+
+- Huh, I've never heard of **unshared convolution** nor **tiled convolution**.
+  Eh, I can look them up later, they're alternatives to convolution but
+  certainly less important to know.
+
+- Ah ... how to compute the **nightmarish** gradient of a convolution operator?
+  The gradient is actually another convolution, but it's hard to derive
+  algebraically. Convolutions are just (sparse) matrix multiplication assuming
+  we've flattened the input tensor. We did that for CS 231n to flatten the input
+  to shape (N, d1*d2*...*dn). Given that matrix, we take its transpose and that
+  gives us the gradient for the backpropagation step, at least in theory. Wait,
+  Goodfellow has a report from 2010 which explains how to compute these
+  gradients. Interesting, how did I not know about this?
+
+- Something I didn't quite think of before, but it seems obvious: we can instead
+  use **structured output** from a CNN that isn't a probability vector or
+  distribution but some tensor that comes "earlier" in the net. This can give
+  probabilities for each precise pixel in an image, for instance, if the tensor
+  output is 3D and (i,j,k) means class i probability in coordinate (j,k). Yeah,
+  overall there are quite a lot of options the user has in designing a CNN. This
+  also enables the possibility of using recurrent CNNs, see Figure 9.17.
+
+- Section 9.8: **Efficient convolutions**. Unfortunately, there is only
+  high-level discussion here, but I'm not sure I'd be able to understand the
+  details anyway. They say:
+
+  > Convolution is equivalent to converting both the input and the kernel to the
+  > frequency domain using a Fourier transform, performing point-wise
+  > multiplication of the two signals, and converting back to the time domain
+  > using an inverse Fourier transform. For some problem sizes, this can be
+  > faster than the naive implementation of discrete convolution.
+
+The last part of the chapter is about the neuro-scientific basis of CNNs. It's
+an easier read.
+
+Overall, I think this is a good chapter. Unfortunately, it didn't cover (a) or
+(b), the stuff I was wondering about earlier. =( OK, I think I understand how to
+visualize a weight filter, but maybe I should look back at that relevant CS 231n
+lecture.
