@@ -17,7 +17,8 @@ statistics" but never mind ...)
 But what if we cannot even sample from our base distribution p in the first
 place. For the above, we needed to draw x_1, ..., x_n somehow! We now turn to
 our possible solutions: importance sampling and MCMC. (The latter includes Gibbs
-sampling, and maybe even contains importance sampling? Not totally sure.)
+sampling, and maybe even contains some variants of importance sampling? Not
+totally sure.)
 
 Section 17.2, Importance Sampling.
 

@@ -1,0 +1,118 @@
+****************************************************
+* NOTES ON CHAPTER 8: Optimization for Deep Models *
+****************************************************
+
+This chapter should be review for me.
+
+    Section 8.1: Learning vs. Pure Optimization
+
+The authors make a good point in that we really care about minimizing the cost
+function w.r.t. the **data generating distribution**, NOT the actual training
+data (i.e. generalization). The difference with optimization is that we know the
+underlying data generating distribution, but in machine learning we only have
+the fixed training data, i.e. minimizing the **empirical risk**. However, this
+isn't used in its raw form:
+
+> These two problems mean that, in the context of deep learning, we rarely use
+> empirical risk minimization. Instead, we must use a slightly different
+> approach, in which the quantity that we actually optimize is even more
+> different from the quantity that we truly want to optimize.
+
+Also, as I know, ML algorithms typically stop not when they're at a true minimum
+but when we define them to stop, early stopping. =)
+
+Oh, note that second-order methods require larger batch sizes. In fact, Andrej
+Karpathy covered that briefly in Lecture 7 of Cs 231n. This is because
+matrix-vector multiplication and taking inverses amplify errors in the original
+Hessian/gradient.
+
+I do this:
+
+> Fortunately, in practice it is usually sufficient to shuffle the order of the
+> dataset once and then store it in shuffled fashion. This will impose a fixed
+> set of possible minibatches of consecutive examples that all models trained
+> thereafter will use, and each individual model will be forced to reuse this
+> ordering every time it passes through the training data.
+
+    Section 8.2: Challenges in Neural Net Optimization
+
+> For many years, most practitioners believed that local minima were a common
+> problem plaguing neural network optimization. Today, that does not appear to
+> be the case. The problem remains an active area of research, but experts now
+> suspect that, for sufficiently large neural networks, most local minima have a
+> low cost function value, and that it is not important to find a true global
+> minimum rather than to find a point in parameter space that has low but not
+> minimal cost.
+
+To test whether we at a local minima, we can test the norm of the gradient.
+
+    Section 8.3: Basic Algorithms
+
+These include SGD and its variants, the core of the chapter. I better know
+these. I know SGD and for momentum, they say:
+
+> Momentum aims primarily to solve two problems: poor conditioning of the
+> Hessian matrix and variance in the stochastic gradient.
+
+and 
+
+> We can think of the particle as being like a hockey puck sliding down an icy
+> surface. Whenever it descends a steep part of the surface, it gathers speed
+> and continues sliding in that direction until it begins to go uphill again.
+
+There's some math there that I probably don't need to memorize, but I should
+blog about it soon. They write it as a first-order differential equation since
+we have a separate velocity term. If we didn't have that, we need a *second*
+order diff-eq. Also, I really have to review differential equations someday.
+
+    Section 8.4: Parameter Initialization
+
+AKA break symmetry!
+
+Surprisingly, they don't see to mention Kaiming He's paper on weight
+initialization. I don't even see any discussion of fan-in and fan-out.
+
+    Section 8.5: Algorithms with Adaptive Learning Rates
+
+Yes, the key is **adaptive** learning rates. AdaGrad, then RMSProp, then Adam:
+
+> The name "Adam" derives from the phrase "adaptive moments." In the context of
+> the earlier algorithms, it is perhaps best seen as a variant on the
+> combination of RMSProp and momentum with a few important distinctions.
+
+The distinctions have to do with estimates of moments and their biases. I'm
+quite confused on this, unfortunately.
+
+(Note: unlike what's suggested in CS 231n Lecture 7, in fact the textbook
+actually has RMSProp with Nesterov's in one of their algorithms.)
+
+    Section 8.6: Approximate Second-Order Methods
+
+Newton's method is intractable, etc. etc. etc. Well, these can help:
+
+> Conjugate gradients is a method to efficiently avoid the calculation of the
+> inverse Hessian by iteratively descending conjugate directions.
+
+Also, know BFGS and L-BFGS.
+
+    Section 8.7: Other Strategies
+
+Ah, **batch normalization**.
+
+> This means that the gradient will never propose an operation that acts simply
+> to increase the standard deviation or mean of $h_i$; the normalization
+> operations remove the effect of such an action and zero out its component in
+> the gradient. This was a major innovation of the batch normalization approach.
+
+and
+
+> Batch normalization reparametrizes the model to make some units always be
+> standardized by definition, deftly sidestepping both problems.
+
+Yeah, this idea of normalizing inputs is obvious, so we have to be clear on the
+actual contribution of batch normalization.
+
+There's some other stuff here about pre-training (yes that's important!) but
+also check Chapter 15. Oh, and don't forget, we normally don't want to design
+new optimization algorithms, but instead to make the networks **easier to
+optimize**.
