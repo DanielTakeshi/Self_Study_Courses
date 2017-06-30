@@ -1,0 +1,39 @@
+Notes on the textbook:
+
+    A Mathematical Introduction to Robotic Manipulation
+    Richard M. Murray and Zexiang Li and S. Shankar Sastry
+
+
+***************************
+* Chapter 1: Introduction *
+***************************
+
+Some history here ... not that relevant to me at this moment. I'd like to see a
+more modern take on this.
+
+But I do like this:
+
+> The vast majority of robots in operation today consist of six joints which are
+> either rotary (articulated) or sliding (prismatic), with a simple "end-
+> effector" for interacting with the workpieces.
+
+Yes, the dvrk has one "prismatic" joint out of seven (note, seven, not six...)
+and the others are rotary --- the dvrk guide actually says "revolute". And I
+obviously know the end-effectors by now.
+
+Then they talk about the book outline. Yeah, maybe I'll definitely take a look
+at Chapter 2 at a "leisurely pace" to better understand rigid body motion:
+
+> In this chapter, we present a geometric view to understanding translational
+> and rotational motion of a rigid body. While this is one of the most
+> ubiquitous topics encountered in textbooks on mechanics and robotics, it is
+> also perhaps one of the most frequently misunderstood.
+
+OK, fair enough.
+
+
+********************************
+* Chapter 2: Rigid Body Motion *
+********************************
+
+TODO
