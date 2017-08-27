@@ -36,4 +36,40 @@ OK, fair enough.
 * Chapter 2: Rigid Body Motion *
 ********************************
 
+> In this chapter, we present a more modern treatment of the theory of screws
+> based on linear algebra and matrix groups. The fundamental tools are the use
+> of homogeneous coordinates to represent rigid motions and the matrix
+> exponential, which maps a twist into the corresponding screw motion.
+
+Important facts:
+
+- Location (x, y, z).
+- Trajectory (x(t), y(t), z(t)) = p(t).
+- Rigid **body** satisfies || p(t) - q(t) || =  || p(0) - q(0) || = constant.
+- Rigid body transformation: map from R^3 -> R^3 representing "rigid motion"
+  (subtle point: cross product must be preserved).
+
+- Know **rotation matrices**: orthogonal and has determinant 1 if right handed
+  coordinate frame.
+- SO(n) = "Special Orthogonal" group of (n,n) matrices, typically n=3 but
+  sometimes n=2. These are a linear algebra "group" under matrix multiplication;
+  definition is the same as the abstract algebra concept.
+
+- Special Exponential
+
+...
+
+Other major points:
+
+- To track motion of a rigid body, we just need to watch one point plus the
+  rotation w.r.t. that point. Hence, use a *configuration* which means we
+  "attach" a coordinate frame to a point and track it w.r.t. a fixed frame.
+  Don't forget what we mean by a configuration: something which can tell us
+  "complete" (or "sufficient"?) information about something in some space. I
+  remember that from CS 294-115.
+
+...
+
+Rigid Motion in R^3
+
 TODO

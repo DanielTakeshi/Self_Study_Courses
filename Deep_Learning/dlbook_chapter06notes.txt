@@ -1,0 +1,27 @@
+*************************************************
+* NOTES ON CHAPTER 6: Deep Feedforward Networks *
+*************************************************
+
+This chapter *should* be review for me. Read though but don't get bogged into
+too much on backpropagation. By the way, these technically include convolutional
+nets, but we don't cover that in detail until Chapter 9.
+
+The first part (Section 6.1) starts off with the classic example of linear
+models failing to solve an XOR, but a simple ReLU two-layer network can do it.
+
+Most neural networks are trained with maximum likelihood so the cost function is
+the negative log likelihood, cost is
+
+    J(\theta) = - E_{x,y} [log p_\theta(y|x)]
+
+This is **equivalently** described as the cross entropy between the model
+distribution and the data distribution. Interesting.
+
+There's some stuff about the cross entropy and viewing the neural network as a
+functional. I should review these later if I have time. BTW, they say that cross
+entropy is preferable to MAE or MSE, due to getting better gradient signals
+(Section 6.2.1).
+
+Section 6.3 is about the choice of hidden units. I'm skimming this.
+
+Section 6.5 is about backpropagation. I'm skimming this. It's looong.
