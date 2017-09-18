@@ -1,19 +1,22 @@
 CS 61C Lecture Review
-Fall 2016 Semester
+Fall 2017 Semester
 
 **********************************
 * Lecture 1: Course Introduction *
-* Given: August 25, 2016         *
+* Given: August 24, 2017         *
 **********************************
 
 Lecture is about four things, well, three that matter to me: (1) machine
 structures, (2) great ideas (in architecture), and (3) how everything is just a
-number!
+number.
+
 
 Machine Structures
 
     C is the most popular programming language, followed by Python. Use C to
-    write software for speed/performance, e.g. embedded systems.
+    write software for speed/performance, e.g. embedded systems. EDIT: nope!
+    That was in F-2016. Now in F-2017, Python has taken over, probably due to
+    Deep Learning. But C is still in second place.
 
     This class isn't about C programming, but C is a VERY important language to
     know in order to understand the important stuff: the **hardware-software
@@ -34,21 +37,25 @@ Machine Structures
         Instruction Units
 
     Looks like the "new version/face" of CS 61C is parallelism, as I should know
-    from CS 267.
+    from CS 267. Along with computers being on **mobile devices** and in many
+    other areas, such as cars! So many things have computers and sensors in them
+    nowadays, that it's mind-blowing.
+
 
 Great Ideas in Architecture
 
-    Abstraction (heck, this was Phil Guo's one-word description of CS!!)
+    Abstraction (Phil Guo's one-word description of CS)
 
         Anything can be represented as a number.  But does this mean we WANT
         them to be like that?  No, we want to program in a "high-level" like C
-        (LOL!) so that we don't have to trudge through assembly language code.
+        so that we don't have to trudge through assembly language code.
 
         We follow this hierarchy: 
             ==> C
             ==> compiler
             ==> assembly language (then machine language??)
-            ==> machine interpretation
+            ==> machine interpretation (note, in F-2017 they're doing RISC-V,
+                not MIPS, which I think was in S-2017 ...)
             ==> architecture implementation (the logic circuit diagram?)
             (I don't fully understand assembly/architecture parts)
 
@@ -72,7 +79,22 @@ Great Ideas in Architecture
 
         However, as one would imagine, if you try to pack more and more
         transistors in a smaller area, it will be exponentially more costly, and
-        I think there will be issues with heat.
+        there will be issues with heat, as well as limits faced with the laws of
+        physics.
+
+        Update: the F-2017 edition (after the class break) brought up a graph
+        from David Patterson's textbook, showing that serial processor
+        performance was exponential up to the last decade, to which it
+        flat-lined. 
+        
+        - Thus, in the "glory days" you could write a program and expect newer
+          hardware to just be faster. But not anymore. If we tried to cram
+          things even further, we'd run into programs like quantum computers,
+          where we don't know if things are really a 0 or a 1 anymore. Uh oh.
+
+        - Now companies (e.g. Apple, Tesla, Samsung, Google, Microsoft) are not
+          just buying general-purpose Intel chips, but building their own chips.
+          So it's an exciting time to be a computer architect.
 
     Principles of Locality (memory hierarchy and caches!!)
 
@@ -99,7 +121,15 @@ Great Ideas in Architecture
     Parallelism (CS 267!!)
         
         This is another thing we should do if possible. We can "fork" calls into
-        several "workers" and then "join" them together later.
+        several "workers" and then "join" them together later. Professor Katz
+        mentions the laundry example. He can use the wash. Then the dryer. But
+        if he's using the dryer, there's no reason why someone can't use the
+        wash. So this is like stacking things together in a tree-fashion, might
+        be related to "tricks with trees" from CS 267.
+
+            Also: we'll learn how to do thread programming, using fork() to
+            split up computation into worker threads, and join() calls to
+            combine the result.
 
         Caveat: Amdahl's law. It tries to predict speed-ups from parallelism.
         The law states the obvious: if there are parts of an application which
@@ -109,33 +139,79 @@ Great Ideas in Architecture
     Dependency via Reproducibility (should be obvious!)
 
         The larger our system, the more likely we have individual components 
-        that fail.
+        that fail. But when we program, we desperately want to make sure we can
+        focus on debugging what WE wrote, and NOT the underlying hardware (oh
+        God).
 
         Easiest thing to do: take majority vote, this helps to protect against
-        faulty machines. Redundant memory bits as well; these are Error
-        Correcting Codes (ECCs). Can also do calculations involving the parity
-        of a number (odd vs even) so we have a spare piece of memory which
-        corrects the expected parity as needed. 
+        faulty machines. Prof Katz: this seems silly and expensive, but useful
+        if we have to send code in space or some other area where it's too
+        expensive to send repairmen.
+            
+        Redundant memory bits as well; these are Error Correcting Codes (ECCs).
+        Can also do calculations involving the parity of a number (odd vs even)
+        so we have a spare piece of memory which corrects the expected parity as
+        needed. 
 
-(Then have some stuff about class administration. Yeah, I won't post any
-homeworks publicly, they'll be private. =).)
+
+Then we switched speakers to Prof. Krste Asanović.
+
+    Higher-level stuff:
+
+        Moore's Law, etc., showed a new paradigm for computer architecture.  See
+        my earlier comments on Moore's Law.
+        
+        Then Deep Learning. Yes, I knew it! That's why Deep Learning needs
+        computer architects, because it's now the hardware and not the algorithm
+        (After all, we're still doing backpropagation). 
+        
+        Google has developed a "Tensor Processing Unit" (TPU), a specialized
+        engine for NN training. Interesting ... I saw Jeff Dean talking about
+        this recently in his AMA.
+
+        Microsoft has developed "Microsoft Brain Wave". Gah, so many new
+        developments.
+
+    RISC-V Instruction Set Architecture (ISA)
+
+        In F-2017, they are switching to this from MIPS, which was used in
+        previous iterations of the course. It was designed at Berkeley for
+        research and education.
+
+        ISA = the language of the processor, or how software is encoded to run
+        on hardware. Example: think about how an "add" instruction would be
+        written in bits.
+
+        Why are we using it if it's open source? Because the cool people are
+        adopting it. Starting now, NVIDIA is using RISC-V in their GPUs. And the
+        previous popular set, MIPS, is not doing so well; the company that owns
+        it is apparently up for sale?
+
+
+(Then we switched back to Prof. Katz, and had some stuff about class
+administration.  Yeah, I won't post any homeworks publicly, they'll be private.)
+
 
 Everything is Just a Number
 
     Computers represent data as binary values.
-        The *bit* is the unit element, either 0 or 1.
-        Then *bytes* are eight bits, can represent 2^8 = 256 different values.
-        A "word" is 4 bytes (i.e. 32 bits), has 2^32 different values, like Java
+        - The *bit* is the unit element, either 0 or 1. We're not doing quantum
+          computing in this class, so we _know_ for certain if a bit is zero or
+          one.
+        - Then *bytes* are eight bits, can represent 2^8 = 256 different values.
+        - A "word" is 4 bytes (i.e. 32 bits), has 2^32 different values, like Java
             integers.
-        Then there are 64-bit floating point numbers (and 32-bit as well), numpy
-            can express both though the Theano library encourages 32-bit.
-        All of these are built up into longer and more complicated expressions!
+        - Then there are 64-bit floating point numbers (and 32-bit as well),
+          numpy can express both though the Theano library encourages 32-bit.
+        - All of these are built up into longer and more complicated expressions!
+        - In F-2017, we'll learn how RISC-V encodes computer programs into bits.
 
     Be sure to MEMORIZE how to convert: (binary <==> decimal). This is so
     important to have down cold. I'm definitely intuitively better at going in
     the ==> direction, just write the number then underneath, going in REVERSE
     direction, do 2^0, 2^1, etc., then multiply by 1s and 0s and add up. Other
-    direction: keep successively dividing by two and keep track of parities.
+    direction: keep successively dividing by two (rounding down) and keep track
+    of parities. Collect (not sum!) the results together at the end.
 
     Unfortunately, there's also the hexadecimal notation. That's harder. Now
     there are 16 different units, not 2 or 10. It goes from 0 to 9 and then we
@@ -143,6 +219,10 @@ Everything is Just a Number
     decimal numbers afterwards, could have easily done the binary version.
         - There are also octals, with 8 units of computation. 
         - I'll avoid using these whenever possible.
+
+    Make sure to be consistent with putting down "two", "ten", or "hex" as
+    subscripts after the numbers. It will make it easier to track which is
+    which.
 
     How to use these numbers in C?
         Use %d for decimal (I know this now!)
@@ -158,7 +238,20 @@ Everything is Just a Number
     so it's KiByte, instead of KByte. And 1GB = 1000MB and 1GiB = 1024MiB.
     Watch out!
 
+
+TODO BELOW ... (for F-2017)
+
+
+**************************
+* Lecture 2: C Language  *
+* Given: August 30, 2016 *
+**************************
+
 Signed integer representation
+
+Note: this was originally in the first lecture in F-2016, but got bumped to the
+second lecture in F-2017 to make room for more discussion on why we need
+computer architects, and also Deep Learning.
 
     We need to have negative numbers, after all!
 
@@ -196,11 +289,6 @@ Signed integer representation
     can't add a positive and a negative number and get something exceeding
     your range, that's like a shrinkage factor).
 
-
-**************************
-* Lecture 2: C Language  *
-* Given: August 30, 2016 *
-**************************
 
 Numbers Wrap-Up
 
