@@ -239,25 +239,22 @@ Everything is Just a Number
     Watch out!
 
 
-TODO BELOW ... (for F-2017)
+**************************************
+* Lecture 2: Numbers and C Language  *
+* Given: August 29, 2017             *
+**************************************
 
+Signed integer representation (Note: this material was originally in the first
+lecture in F-2016, but got bumped to the second lecture in F-2017 to make room
+for more discussion on why we need computer architects, and also Deep Learning.)
 
-**************************
-* Lecture 2: C Language  *
-* Given: August 30, 2016 *
-**************************
-
-Signed integer representation
-
-Note: this was originally in the first lecture in F-2016, but got bumped to the
-second lecture in F-2017 to make room for more discussion on why we need
-computer architects, and also Deep Learning.
-
-    We need to have negative numbers, after all!
+    We need to have negative numbers, so how to handle these?
 
     First attempt: first digit (well, leading digit, so leftmost) represents
         sign, remaining 7 (assuming 8 bits total) are for actual numerical
-        content, "magnitude". But that's bad.
+        content, "magnitude". But that's bad --- at least for integers --- since
+        we have several special cases to consider, and our hardware performance
+        will suffer.
 
     Better: two's complement. With 4 bits, have 16 total numbers:
         0 1 2 3 4 5 6 7  8  9 10 11 12 13 14 15
@@ -265,78 +262,77 @@ computer architects, and also Deep Learning.
 
     Thus, -3 in decimal maps to 13 in binary. This allows us to keep
     adding/subtraction rules for binary numbers consistent. Right, this is
-    StackOverflow: "Two's complement is a clever way of storing integers so
-    that common math problems are very simple to implement."
+    StackOverflow: "Two's complement is a clever way of storing integers so that
+    common math problems are very simple to implement." In other words, the
+    hardware doesn't have to make any special rules.
 
-    Actually, from their slides, looks like "both" -8 to -1 and 8 to 15 are
-    represented when doing math. There's no special rules needed, they can
-    refer to both numbers. Interesting ... but there would probably need to
-    be some rule to handle overflow. WAIT no, those scenarios make a clear
-    distinction between the unsigned vs signed case. I think it's safe to
-    assume the signed case, always. Otherwise we'd ignore negatives.
+        But remember that these are just bits. Regardless of signed or unsigned,
+        it's bits (four, in this case) that the hardware sees.
 
-    That was helpful, we can REVERSE the role of 0s and 1s, so 1111 = -1,
-    then 1110 = -2, 1101 = -3, and so on. Then when adding numbers, we
-    ignore overflow (assuming it's possible ...) and look at our four bits
-    and it should work out.
+        A good analogy with alarm clocks in the lecture, particularly because my
+        alarm clock requires me to keep incrementing the time before it "starts
+        over" at the current value. Thus, 3+11=14 in unsigned, but this is
+        3-5=-2 in two's complement. Fortunately, the "adder" doesn't care, it
+        just does the addition the same way, and we interpret it under the
+        assumption that it's two's complement.
 
-    And if you look carefully, our most significant bit (MSB) also indicates
-    the sign, as in our first representation, but doesn't have the drawback
-    of painful math or a +0 and -0 annoyance. Great!
+        It's not a "sign+magnitude" representation, because the second part
+        isn't a "magnitude".
 
-    Yes, as I saw you have to handle overflow. But with two's complement, if
-    signs are different, no overflow detection needed (this makes sense, you
-    can't add a positive and a negative number and get something exceeding
-    your range, that's like a shrinkage factor).
+    How to do negation in two's complement: INVERT the bits, then add one.
+    Don't forget to add one.
+    
+    The most significant bit (MSB) also indicates the sign, as in our first
+    representation, but doesn't have the drawback of painful math or a +0 and -0
+    annoyance as in the signed integer representation.
+
+    With two's complement, **if signs are different**, no overflow detection
+    needed. This makes sense, you can't add a positive and a negative number and
+    get something exceeding your range, that's like a shrinkage factor.
+
+    Adding numbers of different bit widths:
+        - Unsigned: simply pad zeros at the most significant bits.
+        - Signed: **sign extension**, pad either all 0s or all 1s, depending on
+          the current sign of the number.
 
 
-Numbers Wrap-Up
+Break / This is Not on the Exam
 
-    The 2's complement is NOT a "sign+magnitude" representation, because the
-    second part isn't a "magnitude". Clever trick to go from -x to x, we flip
-    bits then add one.
+    Prof. Asanović talked about Google's TPU. :-) My God, it's so impressive. It
+    has an **internal** matrix multiply unit. Ironically, it's useless for
+    everything **except** for matrix multiplies. Then he talked about the IBM
+    Mainframe.
 
-    Can also ignore overflow with certain two's complement operations. See slide
-    6 for the rules.
-
-    (For unsigned operations, any carry-out signals overflow.)
 
 C Primer
 
+    Remember, we're not giving a tutorial on C, the class is about the
+    hardware/software interface.
+
     Bla bla bla hello world. Use printf("") for printing. Don't forget \n
     newlines!! Think of System.out.print("") in Java (not the println version).
-    Also don't forget semicolons. And #include <stdio.h>. They use int
-    main(void) whereas I use int main() but there's no difference in C++ and in
-    C the difference is "questionable". I think it doesn't matter for what I
+    Also don't forget semicolons. And `#include <stdio.h>`. They use `int
+    main(void)` whereas I use `int main()` but there's no difference in C++ and
+    in C the difference is "questionable". I think it doesn't matter for what I
     would use. But use int main(void) instead, to clearly specify that the
     method doesn't take in any arguments (according to StackOverflow).
 
-    Then compiling using gcc program.c ; ./a.out.
+    Then compiling using `gcc program.c ; ./a.out`.
 
-    Huh, that's it?!?
-
-Not on the Exam ...
-
-    Looks like this was a break so the lecturers could talk about why Moore's
-    Law is still alive. I'm actually confused at this, what's the general
-    consensus among the computer science experts?  (PS: in the actual lecture,
-    this was put at the end of class. Why is it at the start now?) I mean, yes
-    there's a limit to how far we can shrink transistors, i.e. the size of
-    atoms. I think their argument is an ambiguity argument, they're saying
-    Moore's Law means something deeper than "number of transistors doubles every
-    two years" and that deeper explanation is correct.
-
-Compilation vs Interpretation
-    
     Progression:
         [...].c --(compiler)--> [...].o --(linker)--> [a.out]
     From source (i.e. text) file to "machine code object files" (whatever those
     are) to actual executable files, what gets run. The linker makes use of
-    other library files, if we're using them, such as stdio.h I think.
+    other library files, if we're using them, such as stdio.h I think. And the
+    linker helps to link a bunch of [...].c files that we wrote, since we should
+    split up our C code in several files to stay sane.
 
-        Update: looks like there's a "pre-processor" before the compiler
-        executes, which (1) converts comments to a single space and (2) takes
-        care of logic related to commands that start with #. These are "macros".
+        There's *also* a "pre-processor" before the compiler executes, which (1)
+        converts comments to a single space and (2) takes care of logic related
+        to commands that start with #. These are "macros" and get expanded to
+        replace their stuff inline, so for instance, if I look at the
+        intermediate file output from Hello World, it could be very long. But
+        that's OK, it's how C works. :-)
 
     Different from interpreted languages, such as Python, which are run
     "line-by-line". 
@@ -345,13 +341,19 @@ Compilation vs Interpretation
     of an assembly language.
 
     Advantages:
-        Faster (this is why numpy uses a C/C++ "back end", more on that later
-        once I better understand it!)
+        - Faster. This is why numpy uses a C/C++ "back end"; more on that later
+          once I better understand it.
+        - Note that computers can only "run" machine code, or the lowest-level
+          instructions that it can run. Everything else is one layer of
+          abstraction upon abstraction. Compilation can get our C code to
+          machine code in "one shot".
 
     Disadvantages:
-        Long time to compile
-        Need tools like "make" to avoid compiling unchanged code
-        Architecture- and operating systems-specific
+        - Long time to compile.
+        - Need tools like "make" to avoid compiling unchanged code. OK maybe
+          this isn't a real disadvantage, since we should be using make by
+          default.
+        - Architecture- and operating systems-specific.
 
 C Type Declarations
 
@@ -360,18 +362,18 @@ C Type Declarations
         float b;
         char c;
     Like Java, have to declare beforehand, and the type can't change.
+    (Usually, floats are 32 bits and doubles are 64 bits.)
 
     Can do:
-        float pi = 3.14; /* ok this is bad but w/e */
+        float pi = 3.14; /* ok this is mathematically awful but w/e */
     But probably better to have it as a constant:
         const float pi = 3.14;
 
-    BTW for 'unsigned' stuff, just put that before the type, e.g. 'unsigned
-    long'.
+    For 'unsigned' stuff, just put that before the type, e.g. 'unsigned long'.
 
     Enumerations:
         typedef enum {red, green, blue} Color;
-    We can then write:
+    We can then write and call `switch` on:
         Color pants = green; /* to use one example ... */
 
     AH, now it's clear, in Java we KNOW ints are 32 bits, but in C it could be
@@ -387,7 +389,12 @@ C Type Declarations
     use 'public...' or 'public static...'. 
 
     Uninitialized variables: if you don't define them, they take on a random
-    value in memory, i.e. garbage.
+    value in memory, i.e. garbage. Their for loop example prints different
+    values of (uninitialized) x because they have another function which messes
+    around with the memory on the stack. I think if that wasn't there, you would
+    get the same "garbage" value for x. [Update: heh, a student asked the same
+    question. But the Prof. said we should not rely on that. Which is fine, this
+    was only a theoretical question.]
 
     structs:
         - Groups of variables
@@ -400,15 +407,17 @@ C Type Declarations
 Concluding Thoughts
 
     NO CLASSES in C! You need C++ for that, according to my own experience, and
-    StackOverflow. Heck, looks like C++ was for a while known as "C with
-    classes". But now it's just bloated. In C, simulate some class functionality
-    by using structs. Thus, C shouldn't qualify as "object-oriented".
+    StackOverflow. For a while, C++ was known as "C with classes". But now it's
+    just bloated. In C, simulate some class functionality by using structs.
+    Thus, C shouldn't qualify as "object-oriented".
 
     Other main programmatic difference from Java (first one being no classes) is
     that in C we have explicit pointers. Let's discuss that in the next lecture.
 
     There are additional differences in the compilation, obviously.
 
+
+TODO BELOW ... (for F-2017)
 
 ****************************
 * Lecture 3: Pointers      *
