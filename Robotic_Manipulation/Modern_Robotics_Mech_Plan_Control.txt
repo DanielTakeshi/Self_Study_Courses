@@ -1,0 +1,58 @@
+Notes on the textbook:
+
+    Modern Robotics: Mechanics, Planning, and Control, 2017
+    Kevin M. Lynch and Frank C. Park
+
+Homepage: http://hades.mech.northwestern.edu/index.php/Modern_Robotics
+
+It's looks very similar to Murray, Li, and Sastry's book.
+
+**********************
+* Chapter 1: Preview *
+**********************
+
+One way of categorizing robots:
+
+- Open chain: all joints are "actuated," i.e., that we can move them. Example:
+  most industrial robotic arm manipulators.
+- Closed chain: only some joints are "actuated." Example: Stewart-Gough
+  Platform (!!)
+
+The following joints have one degree of freedom, for rotation and translation,
+respectively.
+
+- Revolute joints: these allow for rotation about the joint axis.
+- Prismatic joints: these allow for linear translation along the joint axis.
+
+Use "Degrees of Freedom" to specify the number of "actuated joints." However, a
+(potentially better) sense of DoF is the notion of **configuration spaces**:
+
+> A more abstract but equivalent definition of the degrees of freedom of a robot
+> begins with the notion of its configuration space: a robot's configuration is
+> a complete specification of the positions and orientations of each link of a
+> robot, and its configuration space is the set of all possible configurations
+> of the robot.
+
+
+**********************************
+* Chapter 2: Configuration Space *
+**********************************
+
+TODO
+
+
+*********************************
+* Chapter 3: Rigid Body Motions *
+*********************************
+
+TODO
+
+
+*********************************
+* Chapter 4: Forward Kinematics *
+*********************************
+
+Studies the problem of: given a set of input joint values, find the output
+position and orientation of the reference frame attached to the end-effector.
+This is easily done for an open-chain robot, and the default solution is the
+"Product of Exponentials" (PoE) formula.

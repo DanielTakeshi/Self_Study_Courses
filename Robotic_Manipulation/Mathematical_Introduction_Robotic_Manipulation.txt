@@ -1,0 +1,158 @@
+Notes on the textbook:
+
+    A Mathematical Introduction to Robotic Manipulation, 1994.
+    Richard M. Murray and Zexiang Li and S. Shankar Sastry
+
+A bit old but still in use for Berkeley's courses.
+
+
+***************************
+* Chapter 1: Introduction *
+***************************
+
+Some history here ... not that relevant to me at this moment. I'd like to see a
+more modern take on this.
+
+But I do like this:
+
+> The vast majority of robots in operation today consist of six joints which are
+> either rotary (articulated) or sliding (prismatic), with a simple "end-
+> effector" for interacting with the workpieces.
+
+Yes, the dvrk has one "prismatic" joint out of seven (note, seven, not six...)
+and the others are rotary --- the dvrk guide actually says "revolute". And I
+obviously know the end-effectors by now. (Edit: "revolute" is clearly the better
+terminology... fortunately the book uses that later.)
+
+Then they talk about the book outline. Yeah, maybe I'll definitely take a look
+at Chapter 2 at a "leisurely pace" to better understand rigid body motion:
+
+> In this chapter, we present a geometric view to understanding translational
+> and rotational motion of a rigid body. While this is one of the most
+> ubiquitous topics encountered in textbooks on mechanics and robotics, it is
+> also perhaps one of the most frequently misunderstood.
+
+OK, fair enough.
+
+
+********************************
+* Chapter 2: Rigid Body Motion *
+********************************
+
+> In this chapter, we present a more modern treatment of the theory of screws
+> based on linear algebra and matrix groups. The fundamental tools are the use
+> of homogeneous coordinates to represent rigid motions and the matrix
+> exponential, which maps a twist into the corresponding screw motion.
+
+Important facts:
+
+- Location (x, y, z).
+
+- Trajectory (x(t), y(t), z(t)) = p(t).
+
+- Rigid **body** satisfies || p(t) - q(t) || =  || p(0) - q(0) || = constant.
+
+- Rigid body transformation: map from R^3 -> R^3 representing "rigid motion"
+  (subtle point: cross product must be preserved).
+
+- Cartesian frame: specified with axes vectors x, y, z. These **must** be
+  _orthogonal_ and with magnitude 1. I.e., _orthonormal_ vectors. Oh, and
+  preserves z = x \times y to preserve the right-handedness of the system.
+
+- Know **rotation matrices**: orthogonal and has determinant 1 if right handed
+  coordinate frame.
+
+  - Figure 2.1 is helpful. **Every rotation** of that object corresponds to some
+    rotation matrix (well, w.r.t. a fixed frame). And the rotation matrix even
+    has a special form: we stack the coordinates of the principal axes (x,y,z)
+    of the **body frame** of the object w.r.t. the "inertial frame."
+
+  - Can also think of rotation matrices as transforming points from one
+    coordinate frame to another. Go and draw a picture for their example. It is
+    worth it.
+
+  - Combine rotation matrices via matrix multiplication to form other rotations.
+
+- SO(n) = "Special Orthogonal" group of (n,n) matrices, typically n=3 but
+  sometimes n=2. These are a linear algebra "group" under matrix multiplication;
+  definition is the same as the abstract algebra concept.
+
+- SE(n) = "Special Exponential": R^n x SO(n). In the general case with n=3, we
+  have six dimensions. This is the usual "position and rotation" that I'm
+  familiar with; denote these as (p,R) where p is in R^3 and R is in SO(3).
+
+Other major points:
+
+- To track motion of a rigid body, we just need to watch one point plus the
+  rotation w.r.t. that point. Hence, use a *configuration* which means we
+  "attach" a coordinate frame to a point and track it w.r.t. a fixed frame.
+  Don't forget what we mean by a configuration: something which can tell us
+  "complete" (or "sufficient"?) information about something in some space. I
+  remember that from CS 294-115. More precisely, that's SE(3).
+
+- (From looking online) There are formulas to determine yaw, pitch, and roll
+  from a given rotation matrix. Unfortunately the formulas aren't unique, so
+  watch out.
+
+- "Exponential coordinates for rotation" derived from considering: given angle
+  of rotation \omega, and the amount we rotate some arm (e.g., see Figure 2.2)
+  can we derive the rotation matrix R? They were able to derive it by setting
+  `R=e^{\hat{\omega} * \theta}` where `\hat{\omega}` is a matrix. That's where
+  we get the exponential stuff. And for a closed-form implementation, look at
+  **Rodrigues' formula**. I used it for CS 280.
+
+Rigid Motion in R^3
+
+TODO
+
+
+*************************************
+* Chapter 3: Manipulator Kinematics *
+*************************************
+
+To determine the configuration of the end-effector given information about the
+robot joints, we typically assume that the robot is composed of a set of
+"lower-pair joints". 
+
+- There are six common examples: prismatic, revolute, helical, cylindrical,
+  planar, and spherical. The two most common are, of course, prismatic and
+  revolute joints. (The 2017 book by Lynch & Park have figures of these,
+  though they use "universal" instead of "planar".)
+- The reason why we like this assumption is that each of the joints
+  **restricts the motion of adjacent links to a subgroup of SE(3)**, making it
+  easier to analyze.
+
+Example, with Figure 3.1, there are four joints, three revolute and one
+prismatic. The revolute joints are specified with one \theta for each since it
+can be thought of as a single circle about some axis (specified with the right
+handed coordinate system). In fact, the same holds for the prismatic joint with
+\theta being the displacement along the axis, so specifying these four scalar
+values is enough for us to define the configuration of that particular robot.
+The **joint space** is the Cartesian product of these individual joint angles.
+Equivalently, we can form the configuration space of the robot. It has four
+degrees of freedom (3+1=4 obviously) but this of course doesn't hold as a
+general rule as robots may have constraints on joints that restrict some DoFs.
+
+Attach **two** coordinate frames:
+
+- Base frame: attached to a point on the manipulator which is stationary with
+  respect to the first link (at index 0).
+- Tool frame: attached to the end-effector of the robot, so that the tool frame
+  moves when the joints of the robot move.
+
+This makes sense.
+
+Forward kinematics: determine the function `g_st: Q -> SE(3)` that determines
+the configuration of the tool frame (w.r.t. the base frame).
+
+Generic solution:
+
+  g_st(theta) = g_{s,l1}(theta_1) + ... +  g_{l_{n-1},ln}(theta_n) * g_{ln,t}
+
+Basically, we take the transformations among **adjacent** link frames, and
+compose them together (in order!). And g_st is our mapping. Now, how we can make
+this more precise? That is the PoE!
+
+ == Product of Exponentials ==
+
+...
