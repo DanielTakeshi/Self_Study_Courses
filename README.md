@@ -6,3 +6,4 @@ Current TODO list:
 
 - Finish Goodfellow et al
 - Finish CS 61C self-studying
+- Study robotic manipulation

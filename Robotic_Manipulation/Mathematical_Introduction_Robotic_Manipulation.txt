@@ -90,10 +90,6 @@ Other major points:
   "complete" (or "sufficient"?) information about something in some space. I
   remember that from CS 294-115. More precisely, that's SE(3).
 
-- (From looking online) There are formulas to determine yaw, pitch, and roll
-  from a given rotation matrix. Unfortunately the formulas aren't unique, so
-  watch out.
-
 - "Exponential coordinates for rotation" derived from considering: given angle
   of rotation \omega, and the amount we rotate some arm (e.g., see Figure 2.2)
   can we derive the rotation matrix R? They were able to derive it by setting
@@ -101,7 +97,66 @@ Other major points:
   we get the exponential stuff. And for a closed-form implementation, look at
   **Rodrigues' formula**. I used it for CS 280.
 
+- Theorem: **every rotation matrix** can be represented as the matrix
+  exponential of some skew-symmetric matrix. 
+  
+  (BTW, in their notation, \hat{\ometa} is a skew-symmetric 3x3 matrix.)
+
+- Another representation of rotations are the three **Euler Angles** which is
+  what I'm most familiar with. AKA yaw, pitch, roll. The order of which axes we
+  rotate about matters, since it can be represented as the product of three
+  matrices.  See Equation 2.20 for the formulas to derive yaw, pitch, and roll.
+  Watch out for computing the correct quadrant for the arc-tan functions.
+
+  - Downside: singularities. E.g., there are infinitely many representations of
+    certain rotations, and it is a "fundamental topological fact" that
+    singularities can't be eliminated in a 3-D representation of SO(3). I don't
+    know why, but the authors argue that:
+
+    > This situation is similar to that of attempting to find a global
+    > coordinate chart on a sphere, which also fails.
+
+    Hmm ... sounds intriguing. But I won't fret too much about this.
+
 Rigid Motion in R^3
+
+(Now we're dealing with translations, in addition to rotations.)
+
+- This is where the SE(3) group came up. An element `(p,R) \in SE(3)` serves as:
+
+  - A specification of the configuration of a rigid body.
+  - A transformation taking the coordinates of a point from one frame to
+    another.
+
+  In fact, this is analogous to the SO(3) case, where `R \in SO(3)` was either a
+  rotation configuration or a rotation mapping. We can view it either way.
+
+- To make the linear algebra math easier to describe rigid transformations, use
+  **homogeneous coordinates**. 
+  
+  - Basic idea: Add a 1 to the coordinates of a point, so now we're in R^4, and
+    vectors are (well, effectively) in R^3 since their 4th component is always
+    zero.
+
+  - Now a rigid body transformation is one matrix multiplication on a vector, a
+    linear ("affine") transformation. The last row is all zero except for a 1 at
+    the lower right corner.
+
+  - To compose several of these transformations, do matrix multiplication (yes,
+    as expected).
+
+Must (!!) also know the exponential coordinates for rigid motion, so the SE
+analogue to the SO exponential of a skew symmetric matrix representing a
+rotation.
+
+TODO
+
+
+Velocity of a Rigid Body
+
+TODO
+
+Wrenches and Reciprocal Screws
 
 TODO
 
