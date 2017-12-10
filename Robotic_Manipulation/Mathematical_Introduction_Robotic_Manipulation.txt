@@ -44,7 +44,7 @@ OK, fair enough.
 > of homogeneous coordinates to represent rigid motions and the matrix
 > exponential, which maps a twist into the corresponding screw motion.
 
-Important facts:
+== Important facts ==
 
 - Location (x, y, z).
 
@@ -77,11 +77,34 @@ Important facts:
   sometimes n=2. These are a linear algebra "group" under matrix multiplication;
   definition is the same as the abstract algebra concept.
 
+    Related notation: so(n), with lowercase letters, is the space of n-by-n
+    **skew symmetric** matrices, so A^T = -A.
+
 - SE(n) = "Special Exponential": R^n x SO(n). In the general case with n=3, we
   have six dimensions. This is the usual "position and rotation" that I'm
   familiar with; denote these as (p,R) where p is in R^3 and R is in SO(3).
 
-Other major points:
+== Other Major Points ==
+
+- How to prove that something (e.g., a rotation) is a rigid body transformation?
+  It's simple: show that the transformation preserves distance and orientation.
+  Look at Definition 2.1 and literally just prove the two properties!
+
+    Don't forget to review the _cross_product_ between two vectors.
+        
+      a x b = (a)^b where (a)^ is the cross product matrix.  We often use
+      \hat{a}, which is what the book uses for exponential coordinates of
+      rotation, with `e^{...}`.
+
+    And be careful about the distinction:
+    
+      _points_  (typically written as p, q)
+      _vectors_ (typically written as v, w) 
+
+    For two points p, q \in O, the vector v \in R^3 is the _directed_ line
+    segment going from p to q.
+
+    Conceptual difference: vectors have a _direction_ and a _magnitude_.
 
 - To track motion of a rigid body, we just need to watch one point plus the
   rotation w.r.t. that point. Hence, use a *configuration* which means we
@@ -96,11 +119,17 @@ Other major points:
   `R=e^{\hat{\omega} * \theta}` where `\hat{\omega}` is a matrix. That's where
   we get the exponential stuff. And for a closed-form implementation, look at
   **Rodrigues' formula**. I used it for CS 280.
+    
+    - This is known as "angular velocity" in physics.
+    - We like this due to Euler's Theorem (2.6 in the book): _any_ orientation R
+      in SO(3) is equivalent to a rotation about axis w in R^3 through an angle.
 
 - Theorem: **every rotation matrix** can be represented as the matrix
   exponential of some skew-symmetric matrix. 
   
-  (BTW, in their notation, \hat{\ometa} is a skew-symmetric 3x3 matrix.)
+    BTW, in their notation, \hat{\ometa} is a skew-symmetric 3x3 matrix. And
+    they represent skew symmetric matrices as the product of a *unit*
+    skew-symmetric matrix and a real number.
 
 - Another representation of rotations are the three **Euler Angles** which is
   what I'm most familiar with. AKA yaw, pitch, roll. The order of which axes we
@@ -118,45 +147,78 @@ Other major points:
 
     Hmm ... sounds intriguing. But I won't fret too much about this.
 
-Rigid Motion in R^3
+== Rigid Motion in R^3 ==
 
-(Now we're dealing with translations, in addition to rotations.)
-
-- This is where the SE(3) group came up. An element `(p,R) \in SE(3)` serves as:
+(Now we're dealing with _translations_, in addition to rotations.) This is where
+the _SE(3)_ group appears. An element `(p,R) \in SE(3)` serves as:
 
   - A specification of the configuration of a rigid body.
   - A transformation taking the coordinates of a point from one frame to
     another.
 
-  In fact, this is analogous to the SO(3) case, where `R \in SO(3)` was either a
-  rotation configuration or a rotation mapping. We can view it either way.
+This is exactly analogous to the SO(3) case, where `R \in SO(3)` was either a
+rotation configuration or a rotation mapping. We can view it either way. :-)
 
-- To make the linear algebra math easier to describe rigid transformations, use
-  **homogeneous coordinates**. 
+To make the linear algebra math easier to describe rigid transformations, use
+**homogeneous coordinates**. 
   
-  - Basic idea: Add a 1 to the coordinates of a point, so now we're in R^4, and
-    vectors are (well, effectively) in R^3 since their 4th component is always
-    zero.
+  - Add 1 to the coordinates of a point, so now we're in R^4, and vectors are
+    (well, effectively) in R^3 since their 4th component is always zero.
+  - Now a RBT is one matmul on a vector, a linear ("affine") transformation. The
+    last row is all zero except for a 1 at the lower right corner.
+  - To compose several of these transformations, do more matmuls obviously.
 
-  - Now a rigid body transformation is one matrix multiplication on a vector, a
-    linear ("affine") transformation. The last row is all zero except for a 1 at
-    the lower right corner.
+Must also know the exponential coordinates for rigid motion, so the SE analogue
+to the SO exponential of a skew symmetric matrix representing a rotation.
 
-  - To compose several of these transformations, do matrix multiplication (yes,
-    as expected).
+  - Once again, start from considering rotation about axis \omega
+  - Then derive velocity of tip point via cross products
+  - Then solve (integrate) differential equation to get exponential map
+  - Main difference is the use of 4x4 matrices w/homogeneous-like
+    representation. Also, we consider an extra ("offset"?) point q on \omega.
 
-Must (!!) also know the exponential coordinates for rigid motion, so the SE
-analogue to the SO exponential of a skew symmetric matrix representing a
-rotation.
+Define se(3): 
+  se(3) := { (u,\hat{omega}) s.t. v in R^3, \hat{omega} in so(3) }
+Elements of se(3) are _twists_; Can also write them using 4x4 matrices using
+homogeneous coordinates, useful for the following proposition ...
+
+Proposition 2.8: given \xi \in se(3) and \theta \in R, exponential of \xi*theta
+is an element of SE(3), recall the special exponential ... think of it as the
+possible translations and rotations. 
+   
+  Proof technique: 
+    - Start w/4x4 matrix \xi in se(3). Want to show: exp(\xi*theta) in SE(3).
+    - Prove by construction and obtain a formula for that exponential.
+    - Split into cases, \omega = 0 versus \omega =/= 0.
+    - For second (harder) case, relate to \hat{\xi-prime} and use properties of
+      exponentials and cross products.
+    - Use the _homogeneous_ representation of elements in SE(3). Normally, I
+      think of (p,R) \in SE(3), but use the 4x4 _matrix_ with R and p in it.
+
+  Intuition: earlier we interpreted elements of SE(3) as transforming from one
+  coordinate frame to another. Here, interpret it as mapping points from
+  _initial_ coordinates to their coordinates _after_ the rigid motion is
+  applied. Key difference from earlier is that the start and end are specified
+  w.r.t. a _single_ coordinate frame. The book says:
+ 
+  > Thus, the exponential map for a twist gives the relative motion of a rigid
+  > body. This interpretation of the exponential of a twist as a mapping from
+  > initial to final configurations will be especially important as we study the
+  > kinematics of robot mechanisms in the next chapter.
+
+Important! _Every_ rigid transformation can be written as the exponential of
+some twist.
+
+_Screws_ are a "geometric description" of twists.
 
 TODO
 
 
-Velocity of a Rigid Body
+== Velocity of a Rigid Body ==
 
 TODO
 
-Wrenches and Reciprocal Screws
+== Wrenches and Reciprocal Screws ==
 
 TODO
 
