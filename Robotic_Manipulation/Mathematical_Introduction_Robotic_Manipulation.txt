@@ -50,7 +50,7 @@ OK, fair enough.
 
 - Trajectory (x(t), y(t), z(t)) = p(t).
 
-- Rigid **body** satisfies || p(t) - q(t) || =  || p(0) - q(0) || = constant.
+- Rigid **body** satisfies || p(t) - q(t) || = || p(0) - q(0) || = constant.
 
 - Rigid body transformation: map from R^3 -> R^3 representing "rigid motion"
   (subtle point: cross product must be preserved).
@@ -66,11 +66,8 @@ OK, fair enough.
     rotation matrix (well, w.r.t. a fixed frame). And the rotation matrix even
     has a special form: we stack the coordinates of the principal axes (x,y,z)
     of the **body frame** of the object w.r.t. the "inertial frame."
-
-  - Can also think of rotation matrices as transforming points from one
-    coordinate frame to another. Go and draw a picture for their example. It is
-    worth it.
-
+  - Can also think of rotation matrices as transforming points from one frame to
+    another. Draw a picture for their example; it's worth it.
   - Combine rotation matrices via matrix multiplication to form other rotations.
 
 - SO(n) = "Special Orthogonal" group of (n,n) matrices, typically n=3 but
@@ -113,12 +110,13 @@ OK, fair enough.
   "complete" (or "sufficient"?) information about something in some space. I
   remember that from CS 294-115. More precisely, that's SE(3).
 
-- "Exponential coordinates for rotation" derived from considering: given angle
-  of rotation \omega, and the amount we rotate some arm (e.g., see Figure 2.2)
-  can we derive the rotation matrix R? They were able to derive it by setting
-  `R=e^{\hat{\omega} * \theta}` where `\hat{\omega}` is a matrix. That's where
-  we get the exponential stuff. And for a closed-form implementation, look at
-  **Rodrigues' formula**. I used it for CS 280.
+- "Exponential coordinates for rotation" derived from considering: given *axis*
+  of rotation \omega, and the amount (i.e., angle through the axis) we rotate
+  some arm (e.g., see Figure 2.2) can we derive the rotation matrix R? They were
+  able to derive it by setting `R=e^{\hat{\omega} * \theta}` where
+  `\hat{\omega}` is a matrix. That's where we get the exponential stuff. And for
+  a closed-form implementation, look at **Rodrigues' formula**. I used it for CS
+  280.
     
     - This is known as "angular velocity" in physics.
     - We like this due to Euler's Theorem (2.6 in the book): _any_ orientation R
@@ -127,7 +125,7 @@ OK, fair enough.
 - Theorem: **every rotation matrix** can be represented as the matrix
   exponential of some skew-symmetric matrix. 
   
-    BTW, in their notation, \hat{\ometa} is a skew-symmetric 3x3 matrix. And
+    BTW, in their notation, \hat{\omega} is a skew-symmetric 3x3 matrix. And
     they represent skew symmetric matrices as the product of a *unit*
     skew-symmetric matrix and a real number.
 
@@ -182,12 +180,13 @@ Define se(3):
 Elements of se(3) are _twists_; Can also write them using 4x4 matrices using
 homogeneous coordinates, useful for the following proposition ...
 
-Proposition 2.8: given \xi \in se(3) and \theta \in R, exponential of \xi*theta
-is an element of SE(3), recall the special exponential ... think of it as the
-possible translations and rotations. 
+Proposition 2.8: given \hat{\xi} \in se(3) and \theta \in R, exponential of
+\hat{\xi}*theta is an element of SE(3), recall the special exponential ... think
+of it as the possible translations and rotations. 
    
   Proof technique: 
-    - Start w/4x4 matrix \xi in se(3). Want to show: exp(\xi*theta) in SE(3).
+    - Start w/4x4 matrix \hat{\xi} in se(3). Want to show: exp(\hat{\xi}*theta)
+      in SE(3).
     - Prove by construction and obtain a formula for that exponential.
     - Split into cases, \omega = 0 versus \omega =/= 0.
     - For second (harder) case, relate to \hat{\xi-prime} and use properties of
@@ -207,20 +206,42 @@ possible translations and rotations.
   > kinematics of robot mechanisms in the next chapter.
 
 Important! _Every_ rigid transformation can be written as the exponential of
-some twist.
+some twist. BTW, I think the twist is only the \hat{\xi} part, and the `\theta
+\in R` part is multiplied later. Not a big deal, just think of twists as the 4x4
+"\hat{\xi}" matrices in se(3).
 
-_Screws_ are a "geometric description" of twists.
+_Screws_ are a "geometric description" of twists and give us more intuition on
+them. More precisely:
 
-TODO
+> Consider a rigid body motion which consists of rotation about an axis in space
+> through an angle of `\theta` radians, followed by translation along the same
+> axis by an amount `d` as shown in Figure 2.7a. We call such a motion a screw
+> motion, since it is reminiscent of the motion of a screw, in so far as a screw
+> rotates and translates about the same axis.
 
+- Characterizing a screw: define _pitch_, _axis_, and _magnitude_.
+- To compute RBT, draw a figure, determine end-point, and derive the rotation
+  plus vector offset to get the usual 4x4 homogeneous matrix representation.
+- The RBT of a screw has an equivalence with the exponential of a twist
+  `exp(\hat{\xi}*\theta)`.
+- It is possible to define a screw for every twist!
+
+Important theorem:
+
+> Theorem 2.11 (Chasles). Every rigid body motion can be realized by a rotation
+> about an axis combined with a translation parallel to that axis.
+
+Be careful about _relative_ motion, which is w.r.t. a SINGLE reference frame. To
+"switch" between frames, you need to do an extra matrix multiply with g_{ab} to
+map from B's coordinates to A.
 
 == Velocity of a Rigid Body ==
 
-TODO
+(This is probably not that relevant for me.)
 
 == Wrenches and Reciprocal Screws ==
 
-TODO
+(This is probably not that relevant for me.)
 
 
 *************************************
