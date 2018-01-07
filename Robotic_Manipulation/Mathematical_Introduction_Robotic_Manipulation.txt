@@ -176,7 +176,7 @@ to the SO exponential of a skew symmetric matrix representing a rotation.
     representation. Also, we consider an extra ("offset"?) point q on \omega.
 
 Define se(3): 
-  se(3) := { (u,\hat{omega}) s.t. v in R^3, \hat{omega} in so(3) }
+  se(3) := { (u,\hat{omega}) s.t. u in R^3, \hat{omega} in so(3) }
 Elements of se(3) are _twists_; Can also write them using 4x4 matrices using
 homogeneous coordinates, useful for the following proposition ...
 
@@ -248,6 +248,8 @@ map from B's coordinates to A.
 * Chapter 3: Manipulator Kinematics *
 *************************************
 
+== Section 2: Forward Kinematics ==
+
 To determine the configuration of the end-effector given information about the
 robot joints, we typically assume that the robot is composed of a set of
 "lower-pair joints". 
@@ -276,21 +278,40 @@ Attach **two** coordinate frames:
 - Base frame: attached to a point on the manipulator which is stationary with
   respect to the first link (at index 0).
 - Tool frame: attached to the end-effector of the robot, so that the tool frame
-  moves when the joints of the robot move.
-
-This makes sense.
+  moves when the joints of the robot move (seems logical).
+    So when I query the dVRK, the positions are clearly in the base frame, since
+    if they were in the tool frame, the positions would always be (0,0,0).
 
 Forward kinematics: determine the function `g_st: Q -> SE(3)` that determines
-the configuration of the tool frame (w.r.t. the base frame).
+the configuration of the tool frame (w.r.t. the base frame). Q is the joint
+space of the manipulator, as I mention above.
 
 Generic solution:
 
-  g_st(theta) = g_{s,l1}(theta_1) + ... +  g_{l_{n-1},ln}(theta_n) * g_{ln,t}
+  g_st(theta) = g_{s,l1}(theta_1) * ... * g_{l_{n-1},ln}(theta_n) * g_{ln,t}
 
-Basically, we take the transformations among **adjacent** link frames, and
-compose them together (in order!). And g_st is our mapping. Now, how we can make
-this more precise? That is the PoE!
+Concatenate the transformations among **adjacent** link frames.
 
- == Product of Exponentials ==
+  g_st, our final map, determines the _configuration_ of the _tool_ frame
+  relative to _base_ frame. That's consistent with our subscript notation.
+  Remember also that `g_{ij} \in SE(3)` can be thought as `(p_{ij},R_{ij})`.
 
-...
+== Product of Exponentials ==
+
+We can obtain a more "geometric description" using PoEs. (Not sure what
+precisely this means...)
+
+Example/Figure 3.2 for an overview of two choices: using g_st(\theta) as
+previously discussed, or using PoEs in which
+
+    g_st(theta) = exp(hat{\xi}_1*theta_1) * exp(hat{\xi}_2*theta_2) * g_st(0)
+    (g_st(0) = rigid body transformation from T to S)
+
+Derive by thinking: "fix theta_1 and consider motion wrt theta_2.  Then do
+motion wrt theta_1 and combine result". This is generalized:
+
+> For each joint, construct a twist `ξ_i` which corresponds to the screw motion
+> for the i-th joint with all other joint angles held fixed at θ_j = 0`.
+
+Results in Equation 3.3 on p.87, the PoEs, at last! (TODO: understand why the
+`ξ_i` have their particular form for revolute or prismatic cases.)
