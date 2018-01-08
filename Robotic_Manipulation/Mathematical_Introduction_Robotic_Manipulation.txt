@@ -180,16 +180,16 @@ Define se(3):
 Elements of se(3) are _twists_; Can also write them using 4x4 matrices using
 homogeneous coordinates, useful for the following proposition ...
 
-Proposition 2.8: given \hat{\xi} \in se(3) and \theta \in R, exponential of
-\hat{\xi}*theta is an element of SE(3), recall the special exponential ... think
+Proposition 2.8: given \hat{ξ} \in se(3) and \theta \in R, exponential of
+\hat{ξ}*theta is an element of SE(3), recall the special exponential ... think
 of it as the possible translations and rotations. 
    
   Proof technique: 
-    - Start w/4x4 matrix \hat{\xi} in se(3). Want to show: exp(\hat{\xi}*theta)
+    - Start w/4x4 matrix \hat{ξ} in se(3). Want to show: exp(\hat{ξ}*theta)
       in SE(3).
     - Prove by construction and obtain a formula for that exponential.
     - Split into cases, \omega = 0 versus \omega =/= 0.
-    - For second (harder) case, relate to \hat{\xi-prime} and use properties of
+    - For second (harder) case, relate to \hat{ξ-prime} and use properties of
       exponentials and cross products.
     - Use the _homogeneous_ representation of elements in SE(3). Normally, I
       think of (p,R) \in SE(3), but use the 4x4 _matrix_ with R and p in it.
@@ -206,9 +206,9 @@ of it as the possible translations and rotations.
   > kinematics of robot mechanisms in the next chapter.
 
 Important! _Every_ rigid transformation can be written as the exponential of
-some twist. BTW, I think the twist is only the \hat{\xi} part, and the `\theta
+some twist. BTW, I think the twist is only the \hat{ξ} part, and the `\theta
 \in R` part is multiplied later. Not a big deal, just think of twists as the 4x4
-"\hat{\xi}" matrices in se(3).
+"\hat{ξ}" matrices in se(3).
 
 _Screws_ are a "geometric description" of twists and give us more intuition on
 them. More precisely:
@@ -223,7 +223,7 @@ them. More precisely:
 - To compute RBT, draw a figure, determine end-point, and derive the rotation
   plus vector offset to get the usual 4x4 homogeneous matrix representation.
 - The RBT of a screw has an equivalence with the exponential of a twist
-  `exp(\hat{\xi}*\theta)`.
+  `exp(\hat{ξ}*\theta)`.
 - It is possible to define a screw for every twist!
 
 Important theorem:
@@ -304,7 +304,7 @@ precisely this means...)
 Example/Figure 3.2 for an overview of two choices: using g_st(\theta) as
 previously discussed, or using PoEs in which
 
-    g_st(theta) = exp(hat{\xi}_1*theta_1) * exp(hat{\xi}_2*theta_2) * g_st(0)
+    g_st(theta) = exp(hat{ξ}_1*theta_1) * exp(hat{ξ}_2*theta_2) * g_st(0)
     (g_st(0) = rigid body transformation from T to S)
 
 Derive by thinking: "fix theta_1 and consider motion wrt theta_2.  Then do
@@ -313,5 +313,10 @@ motion wrt theta_1 and combine result". This is generalized:
 > For each joint, construct a twist `ξ_i` which corresponds to the screw motion
 > for the i-th joint with all other joint angles held fixed at θ_j = 0`.
 
-Results in Equation 3.3 on p.87, the PoEs, at last! (TODO: understand why the
+Results in Equation 3.3 on pp.87, the PoEs, at last! (TODO: understand why the
 `ξ_i` have their particular form for revolute or prismatic cases.)
+
+If we assume that's true, then kinematics for Figure 3.3 are easily derived (and
+by this we can get every component in the matrices) by starting from PoEs and
+substituting into the formula for exp(hat{ξ}_i*theta_i) for 1<=i<=4 that we can
+find from Equation (2.36), pp.42.
