@@ -393,46 +393,207 @@ You can save current parameters for easy loading later.
 ***********************************************
 * Tutorial 8: Using rqt_console and roslaunch *
 ***********************************************
+
+rqt_console (not sure how useful)
+
+    - Along with rqt_logger_level, lets us see a lot of information in GUIs.
+    - If we ram the turtle in the wall, we can see the warning message.
+    - Assuming that WARN is within the current "verbosity" level...
+    - Logging prioritized with: Fatal, Error, Warn, Info, Debug.
+
+roslaunch (looks _very_ useful, call this each time we start using robots)
+
+    - Note that `roscore` started a "roslaunch server".
+    - Use this with a _launch_file_ to start nodes in a more scalable way.
+        - `roslaunch [package] [filename.launch]`
+        - `roslaunch  gscam     endoscope.launch`
+    - Good practice, put in the package: `~/catkin_ws/src/[...]/launch/[...]`
+      where the second [...] is the `.launch` file with <launch> tags.
+
+```
+<launch>
+
+  <group ns="turtlesim1">
+  <node pkg="turtlesim" name="sim" type="turtlesim_node"/>
+  </group>
+
+  <group ns="turtlesim2">
+  <node pkg="turtlesim" name="sim" type="turtlesim_node"/>
+  </group>
+
+  <node pkg="turtlesim" name="mimic" type="mimic">
+  <remap from="input" to="turtlesim1/turtle1"/>
+  <remap from="output" to="turtlesim2/turtle1"/>
+  </node>
+
+</launch>
+```
+
+- Above example makes two groups (different names to avoid conflicts), each of
+  which use a `turtlesim_node` node from the `turtlesim` package.
+
+- Also makes a new node with type "mimic". So the `<node [...]>` command must
+  obviously let one make a new node, which can be assigned to a group if it's
+  nested within one. Causes second turtle to mimic the first turtle!
+
+I see, when you run `roslaunch ...` we get this output:
+
+```
+daniel@daniel-ubuntu-mac:~/catkin_ws/src/beginner_tutorials/launch$ roslaunch beginner_tutorials turtlemimic.launch 
+... logging to /home/daniel/.ros/log/42096978-3383-11e8-9614-7831c1b89008/roslaunch-daniel-ubuntu-mac-4922.log
+Checking log directory for disk usage. This may take awhile.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+
+started roslaunch server http://daniel-ubuntu-mac:43721/
+
+SUMMARY
+========
+
+PARAMETERS
+ * /rosdistro: indigo
+ * /rosversion: 1.11.21
+
+NODES
+  /
+    mimic (turtlesim/mimic)
+  /turtlesim1/
+    sim (turtlesim/turtlesim_node)
+  /turtlesim2/
+    sim (turtlesim/turtlesim_node)
+
+auto-starting new master
+process[master]: started with pid [4934]
+ROS_MASTER_URI=http://localhost:11311
+
+setting /run_id to 42096978-3383-11e8-9614-7831c1b89008
+process[rosout-1]: started with pid [4947]
+started core service [/rosout]
+process[turtlesim1/sim-2]: started with pid [4950]
+process[turtlesim2/sim-3]: started with pid [4959]
+process[mimic-4]: started with pid [4966]
+```
+
+so we get groups listed at the top level (turtlesim1, turtlesim2) along with the
+name of the node after it within the nested stuff. 
+
+BTW: seems like roslaunch starts its own master server, so it is not necessary
+to have an existing "roscore" command in another tab. See "auto-starting new
+master" above. We can still get lots of relevant information:
+
+```
+daniel@daniel-ubuntu-mac:~/catkin_ws$ rosnode list
+/mimic
+/rosout
+/turtlesim1/sim
+/turtlesim2/sim
+daniel@daniel-ubuntu-mac:~/catkin_ws$ rostopic list
+/rosout
+/rosout_agg
+/turtlesim1/turtle1/cmd_vel
+/turtlesim1/turtle1/color_sensor
+/turtlesim1/turtle1/pose
+/turtlesim2/turtle1/cmd_vel
+/turtlesim2/turtle1/color_sensor
+/turtlesim2/turtle1/pose
+```
+
+Use `rqt_graph`, as discussed earlier, to understand the launch file.
+
+
+
 ************************************************
 * Tutorial 9: Using rosed to edit files in ROS *
 ************************************************
+
+A very short one, basically use `rosed [package_name] [filename]` to edit files
+without having to use command lines, would be useful for me since I got stuck on
+doing this in my early days of working with the dVRK. Fortunately this uses vim
+by default, so I should have no problem using it.
+
+
+
 *******************************************
 * Tutorial 10: Creating a ROS msg and srv *
 *******************************************
+
+- msg: are simple text files that describe the fields of a ROS message.  They
+  are used to generate source code for messages in different languages.
+- srv: describes a service, composed of two parts: a request and a response.
+
+These have their own syntax rules. See tutorial for details. We put them in
+`msg` and `srv` directories, and then we must ensure our `package.xml` file will
+know to compile and run custom messages, and also change `CMakeLists.txt`.
+There's a lot to do for the latter; see tutorial for lines to un-comment.
+
+The tutorials use a simple `AddTwoInts` service. Details with `rossrv`:
+
+```
+:~/catkin_ws/src/beginner_tutorials$ rossrv show AddTwoInts
+[beginner_tutorials/AddTwoInts]:
+int64 a
+int64 b
+---
+int64 sum
+
+[rospy_tutorials/AddTwoInts]:
+int64 a
+int64 b
+---
+int64 sum
+```
+
+- It's located in two places, since this was created with `roscp`.
+- The actual _implementation_ of the "add two ints" is located elsewhere.
+- Run `catkin_make install` and watch it build successfully. Whew.
+
+The installation makes C (header), lisp and python files. For example:
+
+/home/daniel/catkin_ws/install/lib/python2.7/dist-packages/beginner_tutorials/msg/_Num.py
+
+Again this is _not_ the code implementation (how could it read my mind?) but an
+automatically generated file with some known, common methods. Not yet sure what
+it's purpose is for ...
+
+
+
 ****************************************************************
 * Tutorial 11: Writing a Simple Publisher and Subscriber (C++) *
 ****************************************************************
-
 (Skipping)
-
-
 
 *******************************************************************
 * Tutorial 12: Writing a Simple Publisher and Subscriber (Python) *
 *******************************************************************
+
+
+
+
 **************************************************************
 * Tutorial 13: Examining the Simple Publisher and Subscriber *
 **************************************************************
+
 **********************************************************
 * Tutorial 14: Writing a Simple Service and Client (C++) *
 **********************************************************
-
 (Skipping)
-
-
 
 ********************************************************
 * Tutorial 15: Examining the Simple Service and Client *
 ********************************************************
+
 ********************************************
 * Tutorial 16: Getting started with roswtf *
 ********************************************
+
 ************************************************
 * Tutorial 17: Recording and playing back data *
 ************************************************
+
 ********************************************
 * Tutorial 18: Getting started with roswtf *
 ********************************************
+
 ****************************************
 * Tutorial 19: Navigating the ROS wiki *
 ****************************************

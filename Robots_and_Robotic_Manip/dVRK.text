@@ -1,0 +1,9 @@
+How to use the dVRK in the context of ROS. Reading the ROS tutorials helped to
+clarify why ROS could auto-complete and refer to files somewhere else in the
+computer, because of our ROS path pointing to those directories. Also, the dVRK
+launch files involves similar `.xml` files as shown in the tutorials. Use
+`rosed` to edit without having to search for a path.
+
+Focus on the basic skeleton. How do we start?
+
+
