@@ -561,11 +561,47 @@ it's purpose is for ...
 * Tutorial 11: Writing a Simple Publisher and Subscriber (C++) *
 ****************************************************************
 (Skipping)
-
 *******************************************************************
 * Tutorial 12: Writing a Simple Publisher and Subscriber (Python) *
 *******************************************************************
 
+After downloading their `talker.py` script, I have this in the package:
+
+```
+beginner_tutorials/
+    CMakeLists.txt
+    package.xml
+    include/
+        beginner_tutorials/
+    launch/
+        turtlemimic.launch
+    msg/
+        Num.msg
+    scripts/
+        talker.py
+    src/
+    srv/
+        AddTwoInts.srv
+```
+
+For the most part just read the tutorial, it goes line-by-line. Above, there is
+no node that "receives" the messages sent by the talker, so we write that. It
+uses a very simple message type:
+
+```
+daniel@daniel-ubuntu-mac:~/catkin_ws$ rosmsg show String
+[std_msgs/String]:
+string data
+```
+
+with just a `data` argument to fill.
+
+For classes, look at:
+
+http://docs.ros.org/indigo/api/rospy/html/rospy.topics.Publisher-class.html
+http://docs.ros.org/indigo/api/rospy/html/rospy.topics.Subscriber-class.html
+
+They only have one method each, "publish" and "unregister", respectively.
 
 
 
@@ -573,26 +609,91 @@ it's purpose is for ...
 * Tutorial 13: Examining the Simple Publisher and Subscriber *
 **************************************************************
 
+This is really short. Just run the code and see what we get. Make sure `roscore`
+is running in a seprate tab, though.
+
+
+
 **********************************************************
 * Tutorial 14: Writing a Simple Service and Client (C++) *
 **********************************************************
 (Skipping)
+*************************************************************
+* Tutorial 15: Writing a Simple Service and Client (Python) *
+*************************************************************
+
+Makes the "service" that actually performs the addition. (It's not clear to me
+yet why we need this kind of structure.) And then the client. Again, straight
+from the tutorial.
+
+
 
 ********************************************************
-* Tutorial 15: Examining the Simple Service and Client *
+* Tutorial 16: Examining the Simple Service and Client *
 ********************************************************
 
-********************************************
-* Tutorial 16: Getting started with roswtf *
-********************************************
+Yeah, I got it working.
+
+
 
 ************************************************
 * Tutorial 17: Recording and playing back data *
 ************************************************
 
+This is the rostopic status after starting this up:
+
+```
+daniel@daniel-ubuntu-mac:~/catkin_ws/devel$ rostopic list -v
+
+Published topics:
+ * /turtle1/color_sensor [turtlesim/Color] 1 publisher
+ * /turtle1/cmd_vel [geometry_msgs/Twist] 1 publisher
+ * /rosout [rosgraph_msgs/Log] 2 publishers
+ * /rosout_agg [rosgraph_msgs/Log] 1 publisher
+ * /turtle1/pose [turtlesim/Pose] 1 publisher
+
+Subscribed topics:
+ * /turtle1/cmd_vel [geometry_msgs/Twist] 1 subscriber
+ * /rosout [rosgraph_msgs/Log] 1 subscriber
+```
+
+I get the rosbag which records the keypresses:
+
+```
+daniel@daniel-ubuntu-mac:~/bagfiles$ ls -lh
+total 512K
+-rw-rw-r-- 1 daniel daniel 511K Mar 29 16:16 2018-03-29-16-15-19.bag
+daniel@daniel-ubuntu-mac:~/bagfiles$ vim 2018-03-29-16-15-19.bag 
+daniel@daniel-ubuntu-mac:~/bagfiles$ rosbag info 2018-03-29-16-15-19.bag 
+path:        2018-03-29-16-15-19.bag
+version:     2.0
+duration:    58.6s
+start:       Mar 29 2018 16:15:19.26 (1522365319.26)
+end:         Mar 29 2018 16:16:17.84 (1522365377.84)
+size:        510.9 KB
+messages:    7321
+compression: none [1/1 chunks]
+types:       geometry_msgs/Twist [9f195f881246fdfa2798d1d3eebca84a]
+             rosgraph_msgs/Log   [acffd30cd6b6de30f120938c17c593fb]
+             turtlesim/Color     [353891e354491c51aabe32df673fb446]
+             turtlesim/Pose      [863b248d5016ca62ea2e895ae5265cf9]
+topics:      /rosout                    4 msgs    : rosgraph_msgs/Log   (2 connections)
+             /turtle1/cmd_vel          21 msgs    : geometry_msgs/Twist
+             /turtle1/color_sensor   3648 msgs    : turtlesim/Color    
+             /turtle1/pose           3648 msgs    : turtlesim/Pose
+```
+
+And I can replay my commands.
+
+
+
 ********************************************
 * Tutorial 18: Getting started with roswtf *
 ********************************************
+
+Yeah this is just to check if the system is wrong, and looks like mine is OK.
+
+
 
 ****************************************
 * Tutorial 19: Navigating the ROS wiki *
@@ -605,3 +706,5 @@ Pretty simple, hopefully documentation won't be an issue.
 ****************************
 * Tutorial 20: Where Next? *
 ****************************
+
+Robotics work. :-) Look at our manuals, understand rviz, tf, and moveit.
