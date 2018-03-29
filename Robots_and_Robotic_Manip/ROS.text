@@ -1,0 +1,446 @@
+How to use ROS. I'm using ROS Indigo, on Ubuntu 14.04. Hopefully the Fetch will
+be updated for 16.04 soon. 
+
+
+***************************************************************
+* Tutorial 1: Installing and Configuring Your ROS Environment *
+***************************************************************
+
+Note the environment variables after installation:
+
+```
+$ printenv | grep ROS
+ROS_ROOT=/opt/ros/indigo/share/ros
+ROS_PACKAGE_PATH=/opt/ros/indigo/share:/opt/ros/indigo/stacks
+ROS_MASTER_URI=http://localhost:11311
+ROSLISP_PACKAGE_DIRECTORIES=
+ROS_DISTRO=indigo
+ROS_ETC_DIR=/opt/ros/indigo/etc/ros
+```
+
+In my `.bashrc` I have:
+
+```
+source /opt/ros/indigo/setup.bash
+alias fetch_mode='export ROS_MASTER_URI=http://fetch59.local:11311 export PS1="\[\033[41;1;37m\]<fetch>\[\033[0m\]\w$ "'
+```
+
+where `fetch_mode` came from the HSR tutorials.
+
+Another important note regarding rosbuild and catkin.
+
+> Note: Throughout the tutorials you will see references to rosbuild and catkin.
+> These are the two available methods for organizing and building your ROS code.
+> rosbuild is not recommended or maintained anymore but kept for legacy. catkin
+> is the recommended way to organise your code, it uses more standard CMake
+> conventions and provides more flexibility especially for people wanting to
+> integrate external code bases or who want to release their software. For a
+> full break down visit catkin or rosbuild. 
+
+I followed their directions to make the appropriate directories for a catkin
+workspace. But sourcing the bash scripts didn't seem to have any noticeable
+effect. I thought it'd do a python virtualenv thing?
+
+Beyond the scope of this, but catkin stuff is here:
+
+http://wiki.ros.org/catkin/conceptual_overview
+
+- A build system specifically for ROS. Others are `GNU make` and `CMake`.
+- Source code is organized into "packages" which have targets to build.
+- For information on how to build, we need "configuration files." With catkin
+  (extension of CMake) that's in `CMakeLists.txt`.
+- `catkin` is the newer tool we should use, not `rosbuild` (older).
+
+
+*********************************************
+* Tutorial 2: Navigating the ROS Filesystem *
+*********************************************
+
+Use `package.xml` to store information about a specific package, such as
+dependencies, maintainer, etc.  Know `rospack`, `roscd`, etc. We can prepend
+`ros` to some common Unix commands, do tab completion, etc.
+
+```
+daniel@daniel-ubuntu-mac:~$ rospack find roscpp
+/opt/ros/indigo/share/roscpp
+daniel@daniel-ubuntu-mac:~$ roscd roscpp
+daniel@daniel-ubuntu-mac:/opt/ros/indigo/share/roscpp$ 
+```
+
+
+**************************************
+* Tutorial 3: Creating a ROS Package *
+**************************************
+
+Packages need: a manifest (package.xml) file, a catkin configuration file, and
+its own directory (easy). Since we already created `catkin_ws/src` earlier, put
+each of our custom packages as its own directory within `catkin_ws/src`.
+
+After running the package script, I have this within `~/catkin_ws/src`:
+
+```
+CMakeLists.txt -> /opt/ros/indigo/share/catkin/cmake/toplevel.cmake
+
+beginner_tutorials/
+    CMakeLists.txt
+    include/
+        beginner_tutorials/
+            (empty)
+    package.xml
+    src/
+        (empty)
+```
+
+- Since the tutorial runs the script with `rospy`, `roscpp`, and `std_msgs`,
+  those are listed as the package dependencies in `package.xml`.
+
+- When we run `catkin_make` over the entire workspace, it will say "traversing
+  into beginner_tutorials".
+
+- First-order dependencies:
+  ```
+  ~/catkin_ws$ rospack depends1 beginner_tutorials 
+  roscpp
+  rospy
+  std_msgs
+  ```
+
+- We can also list all the *indirect* dependencies.
+
+- Dependencies are in the following groups:
+    > inbuild_depend (don't see this, I have build_depend, build_export_depend)
+    > buildtool_depend (I have this)
+    > exec_depend (I have this)
+    > test_depend (I don't see this)
+  (Maybe they re-named `build_depend` and `build_export_depend`?)
+
+- `build_depend` for compilation, `exec_depend` for runtime
+
+- Make sure I customize `package.xml`!! It's mostly "meta-data" so should be
+  easier than customizing `CMakeLists.txt`. See conventions online.
+
+
+
+**************************************
+* Tutorial 4: Building a ROS Package *
+**************************************
+
+This discusses `catkin_make` which we previously ran. Note that using
+`catkin_make` we can build *all* the packages in our workspace, at least in the
+`src/` directory (we can change the target directory). Here's what I have in
+`catkin_ws/`:
+
+    ```
+    build/
+        beginner_tutorials/
+        catkin/
+        catkin_generated/
+        CATKIN_IGNORE
+        catkin_make.cache
+        CMakeCache.txt
+        CMakeFiles/
+        cmake_install.cmake
+        CTestTestfile.cmake
+        gtest/
+        Makefile
+        test_results/
+    devel/
+        env.sh
+        lib/
+        setup.bash
+        setup.sh
+        _setup_util.py
+        setup.zsh
+        share/
+    src/
+        beginner_tutorials/
+        CMakeLists.txt
+    ```
+
+The `cmake` and `make` commands go to `build` when they need to build packages.
+The executables and libraries go in `devel` *before* installing packages.
+
+We'd also run `catkin_make install` but this seems to be optional. 
+
+BTW, I now understand why there seem to be so many packages located in that
+directory on our dVRK machine. Unfortunately, we don't seem to be using it.  I
+wonder if the HSR or YuMi computers have a similar file system.
+
+
+
+***************************************
+* Tutorial 5: Understanding ROS Nodes *
+***************************************
+
+- Nodes: A node is an executable that uses ROS to communicate with other nodes.
+    - That's it. Use these to subscribe/publish to topics.
+    - To communicate, use a "ROS client library" which is rospy or roscpp.
+
+- Messages: ROS data type used when subscribing or publishing to a topic.
+    - E.g. "geometry_msgs/Twist". For publisher/subscriber nodes to communicate
+      they need to send/accept the same message type.
+
+- Topics: Nodes can publish messages to a topic as well as subscribe to a topic
+  to receive messages.
+    - Communication depends on these _messages_.
+
+- Master: Name service for ROS (i.e. helps nodes find each other)
+
+- rosout: ROS equivalent of stdout/stderr
+    - It runs by default from running `roscore` as it collects debug messages.
+
+- roscore: Master + rosout + parameter server (parameter server will be
+  introduced later) 
+    - First thing we should run! Recall this is what we do for the dVRK.
+
+After `roscore`:
+
+    ```
+    ~/catkin_ws$ roscore
+    ... logging to
+    /home/daniel/.ros/log/4a2cd14e-32cf-11e8-9512-7831c1b89008/roslaunch-daniel-ubuntu-mac-4867.log
+    Checking log directory for disk usage. This may take awhile.
+    Press Ctrl-C to interrupt
+    Done checking log file disk usage. Usage is <1GB.
+    
+    started roslaunch server http://daniel-ubuntu-mac:33999/
+    ros_comm version 1.11.21
+    
+    SUMMARY
+    ========
+    
+    PARAMETERS
+     * /rosdistro: indigo
+     * /rosversion: 1.11.21
+    
+    NODES
+    
+    auto-starting new master
+    process[master]: started with pid [4879]
+    ROS_MASTER_URI=http://daniel-ubuntu-mac:11311/
+    
+    setting /run_id to 4a2cd14e-32cf-11e8-9512-7831c1b89008
+    process[rosout-1]: started with pid [4892]
+    started core service [/rosout]
+    ```
+
+So `/rosout` will be listed when running `rosnode list` in a separate tab. Keep
+`roscore` running throughout the time we use ROS!! Use `rosnode info` to see (1)
+publishers, (2) subscribers, and (3) services. Also note `PARAMETERS` which must
+mean the parameter server.
+
+Use `rosrun` to run packages along with certain nodes within packages. I ran
+`turtlesim` and yes we get a new node and can re-name if needed. There appear to
+be two node options for this, one for the turtle and another for teleoperation.
+
+
+
+****************************************
+* Tutorial 6: Understanding ROS Topics *
+****************************************
+
+We run the turtlesim via teleoperation, and it works.
+
+- Nodes `turtlesim_node` and `turtle_teleop_key` within the `turtlesim` package
+  communicate to each other via a ROS topic. 
+    - Communication within such topics depends on sending ROS _messages_.
+
+- The teleop node *publishes* key commands, while the sim node *subscribes*.
+
+- Use `rqt_graph` for visualizing node dependencies. This is very useful!
+
+- Use `rqt_plot` to plot certain node values that can be plotted (e.g.,
+  x-position of turtle) but I don't think I'll be using this, I like matpotlib.
+
+Use `rostopic` to examine nodes. For instance, if I run this and then move the
+turtle forward, I get:
+
+```
+~/catkin_ws$ rostopic echo /turtle1/cmd_vel 
+linear: 
+x: 2.0
+y: 0.0
+z: 0.0
+angular: 
+x: 0.0
+y: 0.0
+z: 0.0
+---
+linear: 
+x: 2.0
+y: 0.0
+z: 0.0
+angular: 
+x: 0.0
+y: 0.0
+z: 0.0
+---
+(and so on)
+```
+
+so the up key must mean increasing in the turtle's x direction. We can get a
+full picture of the publisher/subscriber situation:
+
+```
+~/catkin_ws$ rostopic list -v
+
+Published topics:
+ * /turtle1/color_sensor [turtlesim/Color] 1 publisher
+ * /turtle1/cmd_vel [geometry_msgs/Twist] 1 publisher
+ * /rosout [rosgraph_msgs/Log] 4 publishers
+ * /rosout_agg [rosgraph_msgs/Log] 1 publisher
+ * /turtle1/pose [turtlesim/Pose] 1 publisher
+
+Subscribed topics:
+ * /turtle1/cmd_vel [geometry_msgs/Twist] 2 subscribers
+ * /rosout [rosgraph_msgs/Log] 1 subscriber
+ * /statistics [rosgraph_msgs/TopicStatistics] 1 subscriber
+```
+
+The type of `/turtle1/cmd_vel` is `geometry_msgs/Twist`, as shown above. Looks
+like it lists topics followed by message (well, the _type_ of the message).
+
+Use `rostopic pub [...]` to publish something. In the turtle example, this might
+mean commanding the turtle's velocity.
+
+So, there's rostopic `pub`, `list`, `echo`, `type`, etc. Straightforward:
+
+    rostopic bw     display bandwidth used by topic
+    rostopic echo   print messages to screen
+    rostopic hz     display publishing rate of topic    
+    rostopic list   print information about active topics
+    rostopic pub    publish data to topic
+    rostopic type   print topic type
+
+I don't really need `type` now as it's shown in `list` as seen above. The `hz`
+might be useful since (as I know with the dVRK) the camera images of the
+workspaces aren't updated instantaneously but with some delay, and that can
+affect policies which take the images as input.
+
+
+
+*********************************************************
+* Tutorial 7: Understanding ROS Services and Parameters *
+*********************************************************
+
+Recall we used to run `rosnode info /rosout`  where we get information from
+node1, node2, etc in the argument. That provides us with three things. We sort
+of understand publications and subscripts, but now what about _services_?
+
+- Another way for nodes to communicate with each other.
+- Nodes send _requests_, receive _responses_. (Common sense, right?)
+
+Like `rostopic`, `rosservice` has lots of command options:
+
+    rosservice list         print information about active services
+    rosservice call         call the service with the provided args
+    rosservice type         print service type
+    rosservice find         find services by service type
+    rosservice uri          print service ROSRPC uri
+
+For example, I see this with `list`:
+
+```
+:~/catkin_ws$ rosservice list
+/clear
+/kill
+/reset
+/rosout/get_loggers
+/rosout/set_logger_level
+/rostopic_8997_1522274470739/get_loggers
+/rostopic_8997_1522274470739/set_logger_level
+/rqt_gui_py_node_9061/get_loggers
+/rqt_gui_py_node_9061/set_logger_level
+/spawn
+/teleop_turtle/get_loggers
+/teleop_turtle/set_logger_level
+/turtle1/set_pen
+/turtle1/teleport_absolute
+/turtle1/teleport_relative
+/turtlesim/get_loggers
+/turtlesim/set_logger_level
+```
+
+We can call the `rosservice call /clear` above, so this is calling a service in
+the list above (this one with no arguments). We choose `clear` so that the
+background is clear (we don't see the turtle's path). This is what I see from
+the window that originally started the `turtlesim` package.
+
+```
+:~/catkin_ws$ rosrun turtlesim turtlesim_node
+[ INFO] [1522273700.220832117]: Starting turtlesim with node name /turtlesim
+[ INFO] [1522273700.228355538]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+[ WARN] [1522273804.373982014]: Oh no! I hit the wall! (Clamping from [x=7.155886, y=-0.008128])
+[ WARN] [1522273804.389975987]: Oh no! I hit the wall! (Clamping from [x=7.163082, y=-0.031181])
+(omitted...)
+[ WARN] [1522276335.861971290]: Oh no! I hit the wall! (Clamping from [x=9.302450, y=11.089913])
+[ WARN] [1522276335.877974885]: Oh no! I hit the wall! (Clamping from [x=9.334450, y=11.088992])
+[ INFO] [1522280291.029979359]: Clearing turtlesim.
+```
+
+We can also use the `/spawn` service to, well, spawn another turtle.
+
+We also have `rosparam`, which is the parameter analogue to `rosservice` for
+service, `rostopic` for topics, etc. We can list the parameters and adjust them,
+for instance by changing the background color. (However, it doesn't seem to
+actually change my color, even though I am clearly setting all the background
+colors to be 0 ... hmmm.)
+
+You can save current parameters for easy loading later.
+
+
+
+***********************************************
+* Tutorial 8: Using rqt_console and roslaunch *
+***********************************************
+************************************************
+* Tutorial 9: Using rosed to edit files in ROS *
+************************************************
+*******************************************
+* Tutorial 10: Creating a ROS msg and srv *
+*******************************************
+****************************************************************
+* Tutorial 11: Writing a Simple Publisher and Subscriber (C++) *
+****************************************************************
+
+(Skipping)
+
+
+
+*******************************************************************
+* Tutorial 12: Writing a Simple Publisher and Subscriber (Python) *
+*******************************************************************
+**************************************************************
+* Tutorial 13: Examining the Simple Publisher and Subscriber *
+**************************************************************
+**********************************************************
+* Tutorial 14: Writing a Simple Service and Client (C++) *
+**********************************************************
+
+(Skipping)
+
+
+
+********************************************************
+* Tutorial 15: Examining the Simple Service and Client *
+********************************************************
+********************************************
+* Tutorial 16: Getting started with roswtf *
+********************************************
+************************************************
+* Tutorial 17: Recording and playing back data *
+************************************************
+********************************************
+* Tutorial 18: Getting started with roswtf *
+********************************************
+****************************************
+* Tutorial 19: Navigating the ROS wiki *
+****************************************
+
+Pretty simple, hopefully documentation won't be an issue.
+
+
+
+****************************
+* Tutorial 20: Where Next? *
+****************************
