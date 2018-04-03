@@ -1,0 +1,152 @@
+Notes on how to use the HSR. Use their Python interface (or we can do
+lower-level ROS stuff). Also, there's a built-in motion planner, so MoveIt! is
+not necessary. Ideally, we get a camera image, get the x and y values from the
+pixels, figure out z (the depth), and determine a rotation, and send it there.
+
+- Gazebo can be useful.
+- rviz is DEFINITELY helpful for debugging. Know it.
+- Calibration: ouch, unfortunately this will take a while and there are eight
+  sensors to calibrate ... at minimum. The docs actually show a lot. I see a
+  sensor (camera) on the hand as well.
+- Register positions, using the same image I see of black/white boxes, the
+  "calibration marker jig".
+
+Monitor status: see 6.1 of the manuals. Setting up development PC/laptop,
+section 6.2. Not much else to write here. At least I can get rviz running with
+images. You need to hit the reset button and see the LEDs (not above the
+'TOYOTA' text but everywhere else) turn yellow-ish.
+
+On my TODO list:
+
+- Figure out good test usage practices for rviz.
+- Get skeleton code set up for the HSR to:
+    - process camera images
+    - move based on those images (either base or gripper, or both)
+- Figure out a safe way to automatically move arms.
+
+
+
+******************
+* Moving the HSR *
+******************
+
+General idea with Python code, do something like:
+    ```
+    self.robot = hsrb_interface.Robot()
+    self.omni_base = self.robot.get('omni_base')
+    self.whole_body = self.robot.get('whole_body')
+    ```
+where the `hsrb_interface` is code written by the Toyota HSR programmers,
+thankfully. Let's understand _base_ motion.
+
+
+    Aerial view of the HSR. Assumes its head is facing north.
+    
+         ^
+         |
+    <--[hsr]--> 
+         |
+         v
+    
+    Axes are: 
+
+        pos(x) for north, neg(x) for south. 
+        Also, (oddly) pos(y) for LEFT, neg(y) for right. 
+
+    I thought the `y` stuff would be the other way around, but I guess not. The
+    z stuff stays fixed (obviously).  These are based on the (x,y,z) I get from
+    `omni_base.get_pose()`. The rotations are in quaternions.
+
+        FYI: When the robot starts up, it has some (x,y,z) position which should
+        be set at (0,0,0) based on the starting position. 
+   
+    Errors: unfortunately if you query the `omni_base.get_pose()` again and
+    again, the values are still going to vary by something like 1-3mm, so
+    there's always some error. Same with the dVRK.
+    
+    Rotations: clockwise from aerial view, the `z` decreases. Counterclockwise,
+    it increases. The other three values in the quaternion don't seem to change,
+    x==y==0 and w==1.  We're only rotating about one plane for the base so this
+    is expected. TODO: understand quaternions well.
+ 
+
+To clarify the above, understand `go_rel`:
+
+    ```
+    In [30]: omni_base.go_rel?
+    Type:       instancemethod
+    String Form:<bound method MobileBase.go_rel of <hsrb_interface.mobile_base.MobileBase object at 0x7feb5d259d50>>
+    File:       /opt/tmc/ros/indigo/lib/python2.7/dist-packages/hsrb_interface/mobile_base.py
+    Definition: omni_base.go_rel(self, x=0.0, y=0.0, yaw=0.0, timeout=0.0)
+    Docstring:
+    Move base from current position.
+    
+    Args:
+        x   (float): X-axis position on ``robot`` frame [m]
+        y   (float): Y-axis position on ``robot`` frame [m]
+        yaw (float): Yaw position on ``robot`` frame [rad]
+        timeout (float): Timeout until movement finish [sec].
+            Default is 0.0 and wait forever.
+    ```
+    
+    Seems like indeed we should only control x and y, obviously. The interesting
+    part is that `yaw` must represent the `z` in the quaternion, so rotations of the
+    base imply changes in yaw only.
+
+
+Next, `whole_body`, allows more control. This is for the _end_effector_:
+
+    ```
+    In [38]: whole_body.get_end_effector_pose?
+    Type:       instancemethod
+    String Form:<bound method JointGroup.get_end_effector_pose of <hsrb_interface.joint_group.JointGroup object at 0x7feb5f2d5ad0>>
+    File:       /opt/tmc/ros/indigo/lib/python2.7/dist-packages/hsrb_interface/joint_group.py
+    Definition: whole_body.get_end_effector_pose(self, ref_frame_id=None)
+    Docstring:
+    Get a pose of end effector based on robot frame.
+    
+    Returns:
+        Tuple[Vector3, Quaternion]
+    
+    In [39]: whole_body.get_end_effector_pose()
+    Out[39]: Pose(pos=Vector3(x=0.2963931913608169, y=0.07800193518379123, z=0.6786170137933408), ori=Quaternion(x=0.7173120598879523, y=-7.000511757597367e-05, z=0.6967520358527196, w=-6.613377471335618e-05))
+    ```
+
+    This is relative to the base frame. So when we move the HSR, without moving
+    the end-effector, the x,y,z stuff remains the same, as expected. BUT since
+    the base frame has some fixed "reference rotation" then rotating base means
+    the y and w quaternion components change; the x and z stay the same.
+
+    We can also see joint names and their limits. Use `whole_body.joint_state`
+    to get full details. There's lots of `whole_body.move_to[...]` methods that
+    make it really convenient for research code.
+
+    An alternative is to explicitly assign to these by publishing to the
+    associated ROS topics, which might be more generally applicable to the
+    Fetch and other robots (well, we change the topics ...).
+
+
+Finally, for the gripper itself, use `gripper`. We can grasp it, so it's similar
+to the dVRK, and use negative values for tight stuff. :-)
+
+
+Other notes on moving the HSR:
+
+    - It's possible to move in straight lines, arcs, etc.
+    - Understand `tf` for resolving coordinate frames. TODO: later ... actually,
+      might as well do this all in simulation (rviz) first to double check
+      movements.
+    - Also use rviz for visualizing coordinates. RGB = xyz axes.
+    - Common coordinates: `map` for the overall map, `base_footprint` for the
+      base of the HSR, `hand_palm_link` for the robot's hand (end-effector I
+      assume, or "tool frame").
+    - You can move both the base and arm together to get to a destination, can
+      also weigh relative contribution.
+    - Can move the hand based on force sensing, might be useful if we're running
+      this automatically and need some environment feedback?
+    - Avoid collisions by using the collision avoider they have. Looks really
+      simple to use, they handle a lot for us.
+
+
+See Section 7.2.6 for more advanced coding, rather than using `ihsrb` which is
+like IPython. Oh, and later they actually have a YOLO tutorial. Nice!

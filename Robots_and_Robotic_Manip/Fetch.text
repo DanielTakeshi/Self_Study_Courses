@@ -1,0 +1,83 @@
+Notes on how to use the Fetch.
+
+Note that `PS1` is an environment variable that we can import, but the real key
+thing is to set ROS_MASTER_URI, that will let us connect to the Fetch. This does
+not happen by default, so must export it each new window (for now).
+
+Then I think we should do `rosrun [package] [script]` where I code stuff in
+[script] inside some package. But are Ron and Michael doing it in a similar way?
+
+Recommended order for development (NOT WORKING):
+
+- Code the script within some package
+- Compile the package with `catkin_make`
+- Another terminal, set `ROS_MASTER_URI` appropriately
+- In that same terminal, `source ./devel/setup.bash`
+- Finally, again in same terminal `rosrun ...` and enjoy
+
+I know when I set `ROS_MASTER_URI` and run `rostopic list` I get all the
+appropriate Fetch-related topics ... so why am I not able to access them in my
+code when calling `rosrun ...`? 
+
+(If I don't set `ROS_MASTER_URI` and instead have it as the default, then I do
+not get any topics, of course. Note that according to documentation, roslaunch
+will START roscore if it detects that one doesn't exist!)
+
+Is there a launch file that I can use? I'm confused because `rostopic echo
+[...]` for the topics means I can see the output ...
+
+
+***************************
+* Tutorial: Visualization *
+***************************
+
+
+
+*******************************
+* Tutorial: Gazebo Simulation *
+*******************************
+
+Is this supposed to use the real robot's camera, or what? Unfortunately I simply
+cannot get this to run at all, and I'm not sure if `roscore` is necessary in a
+separate terminal before running `roslaunch fetch_gazebo [...]`.
+
+
+
+**************************
+* Tutorial: Robot Teleop *
+**************************
+
+This is pretty easy.
+
+
+
+************************
+* Tutorial: Navigation *
+************************
+**************************
+* Tutorial: Manipulation *
+**************************
+
+I ran both of these manipulation tutorials (hand-wavy thing and disco) and it
+works. I wasn't able to try out extensions.
+
+
+
+************************
+* Tutorial: Perception *
+************************
+
+Fetch exposes several "ROS topics" that we can subscribe to in order to obtain
+camera information. Unfortunately, I have yet to get call-backs to work ...
+
+
+
+**************************
+* Tutorial: Auto-Docking *
+**************************
+*************************
+* Tutorial: Calibration *
+*************************
+**********************************
+* Tutorial: Programming-By-Demos *
+**********************************

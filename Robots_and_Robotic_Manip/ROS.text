@@ -479,7 +479,11 @@ name of the node after it within the nested stuff.
 
 BTW: seems like roslaunch starts its own master server, so it is not necessary
 to have an existing "roscore" command in another tab. See "auto-starting new
-master" above. We can still get lots of relevant information:
+master" above and also:
+
+    https://answers.ros.org/question/217107/does-a-roslaunch-start-roscore-when-needed/
+
+We can still get lots of relevant information:
 
 ```
 daniel@daniel-ubuntu-mac:~/catkin_ws$ rosnode list
