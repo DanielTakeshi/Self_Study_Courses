@@ -1,8 +1,7 @@
-Part 1: 
-    Introduction
+Part 1: Introduction
 
-Chapter 1: 
-    Learning: From Speculation to Science
+
+Chapter 1: Learning: From Speculation to Science
 
 
 Very important:
@@ -24,7 +23,6 @@ Very important:
   with legs, fish with udders, etc. Another example: teaching students the Earth
   is round when they think it's flat.
 
-
 Also important:
 
 - There should be a focus on improving students' understanding of their own
@@ -45,8 +43,10 @@ Also important:
   also clear that we need to broaden the population who have access to quality
   education.
 
-
 Stuff I forgot to record after a first pass:
 
 - Don't ask which teaching technique is best because that's like asking which
   tool is best: it depends on the task and materials at hand.
+
+- Don't forget all those hours students spend _outside_ of school. There are so
+  many overlooked opportunities there. I should know, from personal experience.
