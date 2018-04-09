@@ -1,0 +1,99 @@
+Part 3: Teachers and Teaching
+
+
+Chapter 6: Design of Learning Environments
+
+Very important:
+
+- Use learning-centered (actually, "learner centered") environments, a bit
+  unclear to define but I think mostly about better understanding of students'
+  prior knowledge. Again, see previous chapters about this.
+
+- Need some form of knowledge learning, so students need to learn something
+  beyond just "learning how to learn". (Edit: not really the right way to define
+  this but again not a clear definition, but mostly about how to make students
+  knowledgeable, so that they can do effective transfer --- again, see previous
+  chapters.)
+
+- Students need feedback (see "deliberate practice"), but not just the kind that
+  come with grades and tests. Also, feedback is most effective when students can
+  revise their thinking on the _current_ subject matter, not when they get a
+  test but by the time they have it, they've moved on to newer concepts.
+
+- Must consider the community/culture aspect, which obviously affects learning.
+  For instance, Anglo culture emphasizes talking and asking questions, but
+  others might not (and this affects how teachers evaluate students). Also,
+  seriously, when are we going to talk about multi-racials? Gaaaah, so
+  disappointing.
+
+Also important:
+
+- A bunch of stuff on the merits of television (remember, this was 2000) but not
+  really relevant for what I hope to get out of this book. Also a bunch of stuff
+  on how to evaluate teachers for practical purposes.
+
+Stuff I didn't remember:
+
+- While some may say schools aren't working, the reality is that we're asking
+  for way more out of students than in past eras. In the past, being literate
+  could have simply meant being able to sign your name. Now we're getting to the
+  point where we need students to interpret and compose potentially complicated
+  written stuff.
+
+- Eh, a relevant quote: "Learning theory does not provide a simple recipe for
+  designing effective learning environments; similarly, physics constrains but
+  does not dictate how to build a bridge."
+
+
+Chapter 7: Effective Teaching Examples
+
+Very important:
+
+- History: focus not on facts but on analysis and understanding how to debate
+  concepts. If you take students who know facts and historians who don't
+  specialize in the same area, the students might actually do better on tests of
+  factual knowledge, but won't be able to do any analysis. Effective teachers
+  can promote debate, with careful monitoring of course. Interesting example:
+  teacher asking students to put stuff in a time capsule, so they need to reason
+  about important stuff.
+
+- Math: less focus on computation, more focus on problem solving skills.
+  Analogies can help, e.g., modeling floors of a building to learn about
+  negative numbers (negative floors = below ground level). Oh, also model-based
+  stuff, where we apply math to building models of stuff (e.g., buildings).
+  Could also clearly apply to physics.
+
+- Science: again, less on facts and more on analysis. Many students have
+  intuition on stuff that's not correct in physics (e.g., forces and Newton's
+  third law) so use live demos. Also recall earlier discussion about students
+  not classifying problems correctly based on solution, but based on how they
+  look (surface features). Students who are able to describe a problem
+  "hierarchically" tend to do better --- though this is obviously vague.
+
+Also important:
+
+- Deliberate practice. Don't forget.
+
+- Effective teachers must know the subject matter AND be able to tell where
+  students are likely to run into roadblocks.
+
+Stuff I didn't remember:
+
+- Practical stuff about instruction in large classes.
+
+
+Chapter 8: Teacher Learning
+(Not the most relevant chapter for me)
+
+There's a huge difference between education theory and practice, leads to
+teachers rejecting (or not really diving into) research, lots of turnover,
+susceptible to local politics, etc. It's best to have workshops and other
+meet-ups where teachers can practice and discuss teaching techniques, etc.
+
+
+Chapter 9: Technology to Support Learning
+(Not the most relevant chapter for me)
+
+Well this is kind of out of date, I suppose. Mostly, technology has tradeoffs
+but can be used to bring in new contexts/demos to the class, etc. Particularly
+useful if it can help provide repeated feedback (remember deliberate practice).
