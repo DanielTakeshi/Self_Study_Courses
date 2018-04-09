@@ -48,18 +48,98 @@ Chapter 3: Learning and Transfer
 
 Very important:
 
+- You could argue that the ultimate goal of teaching is better transfer
+  learning, or how to efficiently use the knowledge from school and apply it to
+  the real world. Also, the goal is not to immediately know how to do new tasks,
+  but simply to increase the _speed_ at which these new tasks will be learned.
+  The early performance attempts is less important since anyone is going to need
+  some time to learn new stuff, so don't evaluate based on the first time,
+  evaluate based on the length of the learning period.
+
+- All transfer learning (and learning itself, of course) starts from somewhere.
+  Yeah, prior knowledge was emphasized in earlier chapters. Clearly, prior
+  knowledge may help or hinder new learning. Examples: students incorrectly
+  think that plants eat soil, that when they throw a ball in the air there is
+  still "force from the hand pushing it" and so on.
+
+- For better transfer learning, we need to see the same concept in different
+  contexts, so that we can understand the "abstract stuff" that is shared across
+  tasks. That's better than remembering task-specific details (or "overly
+  contextualized" knowledge in their jargon) that don't generalize.
+
 Also important:
 
+- Learning depends a lot on social background and culture, in addition to more
+  factual, easy-to-define prior knowledge. Some cultures may discourage asking
+  questions, for instance, which means if teachers expect to see questions, they
+  might think a student is uninterested. There was also some differences noted
+  among white versus black families (but no biracials, Asians, etc ... sigh).
+
+- Speed of learning depends on deliberate practice and feedback. :-)
+
 Stuff I didn't remember:
+
+- (A bit silly that I didn't record this, but oh well ...) All learning takes
+  time. You simply can't be an expert without investing the time. And moving
+  on to more advanced subjects without knowing the basics is not ideal.
+
+- Oh, another obvious thing I didn't quite record: don't forget about
+  motivation. What factors (social, etc.) motivate students? That's very
+  important for speed of learning.
+
+- Amount of transfer depends on overlap among concepts, well roughly speaking.
+  Yeah, another generally obvious thing.
 
 
 Chapter 4: How Children Learn
 
 Very important:
 
+- Even the very young (as in, months-old infants) exhibit signs of learning and
+  knowledge, which contrasts with very early research claims. We have better
+  tools for experimentation and to measure infants, since (for obvious reasons)
+  it's not that easy to test on them.  TL;DR young children are active,
+  competent agents.
+
+- Children also pick up language and can quickly tell if stuff seems natural or
+  unnatural. On a related note, parents need to read to their children, though
+  some of this can be "picture" books.
+
+- Zone of proximal development: the gap between current abilities, and the
+  abilities one could have with extra teaching assistance. (Or more accurately,
+  'potential' ... see the text for details.) It's the job of parents,
+  caregivers, teachers, etc., to continue improving the students' skills so that
+  this zone proceeds to the next natural stages.
+
 Also important:
 
+- Some cool stuff that infants know: they like to be consistent with numbers, so
+  they see groups of twos, relax, but if the next group has three things, then
+  they'll be more alert and think something's different. Also, physics: infants
+  somehow are able to tell that things will fall over without supports, and pay
+  more attention on that (in rigorous experiments).
+
+- Children can naturally be interested in solving problems, it doesn't always
+  have to be explicitly forced upon by a teacher. Also, lots of this depends on
+  culture (again, this is obvious, but good to reiterate).
+
 Stuff I didn't remember:
+
+- "Privileged domains": physical and biological concepts, causality, number, and
+  language. These are domains where infants show _positive_biases_ in learning,
+  which makes sense from an evolutionary perspective.
+
+- Precise experimental techniques for detecting infant cues and preferences:
+  non-nutritive sucking, habituation (i.e., infant "gets used to it" and stops
+  responding to that cue), and visual expectation.
+
+- Infants can distinguish between animate and inanimate objects. Also, they're
+  good at inferring from context.
+
+- There's a little bit about memory here, might be more in later chapters, but
+  mostly about the strategy of clustering to improve memory performance.  Also
+  some discussion about how infants vs older children may have different memory
+  strategies, and strategies get more effective with age (generally).
 
 
 Chapter 5: Mind and Brain
