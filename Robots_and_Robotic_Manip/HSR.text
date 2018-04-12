@@ -37,7 +37,10 @@ General idea with Python code, do something like:
     self.whole_body = self.robot.get('whole_body')
     ```
 where the `hsrb_interface` is code written by the Toyota HSR programmers,
-thankfully. Let's understand _base_ motion.
+thankfully. That part is necessary for the robot to begin publishing stuff from
+its topics. 
+
+Let's understand _base_ motion.
 
 
     Aerial view of the HSR. Assumes its head is facing north.

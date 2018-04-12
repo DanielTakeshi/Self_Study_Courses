@@ -1,5 +1,31 @@
 Notes on how to use the Fetch.
 
+************
+** UPDATE **
+************
+
+Here are some full steps:
+
+(0) Start the fetch, ensure that it can move with the joystick controls.
+
+(1) Switch to fetch mode by calling `fetch_mode` on the command line. This will
+ensure that the `ROS_MASTER_URI` is the Fetch robot.
+
+(2) Be on the correct WiFi network. Then the master node (Fetch) is accessible.
+
+    - Verify that `rostopic list` returns topics related to the Fetch.
+    - Also verify that the teleop via keyword script (via `rosrun ...`, see
+      tutorials) is working, though sometimes even that doesn't work for me.
+
+(3) Then then do whatever I need to do... for instance, simply running Ron's
+camera script (a single python file) works to continually see the Fetch's
+cameras. Finally!
+
+
+******************
+** Older notes: **
+******************
+
 Note that `PS1` is an environment variable that we can import, but the real key
 thing is to set ROS_MASTER_URI, that will let us connect to the Fetch. This does
 not happen by default, so must export it each new window (for now).
