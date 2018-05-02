@@ -21,6 +21,12 @@ ensure that the `ROS_MASTER_URI` is the Fetch robot.
 camera script (a single python file) works to continually see the Fetch's
 cameras. Finally!
 
+    - Some python scripts might require a launch file to be running, such as the
+      built-in disco.py and wave.py code. For these use `roslaunch [...] [...]`.
+
+
+TODO: figure out robot state? For Fetch-specific messages.
+
 
 ******************
 ** Older notes: **
@@ -63,9 +69,73 @@ Is there a launch file that I can use? I'm confused because `rostopic echo
 * Tutorial: Gazebo Simulation *
 *******************************
 
-Is this supposed to use the real robot's camera, or what? Unfortunately I simply
-cannot get this to run at all, and I'm not sure if `roscore` is necessary in a
-separate terminal before running `roslaunch fetch_gazebo [...]`.
+At least this is clear:
+
+> Never run the simulator on the robot. Simulation requires that the ROS
+> parameter use_sim_time be set to true, which will cause the robot drivers to
+> stop working correctly. In addition, be sure to never start the simulator in a
+> terminal that has the ROS_MASTER_URI set to your robot for the same reasons.
+
+And it looks like I've installed the two packages necessary,
+`ros-indigo-fetch-gazebo` and `ros-indigo-fetch-gazebo-demo`.
+
+Run: `roslaunch fetch_gazebo simulation.launch` and the Gazebo simulator should
+show up! However, I've noticed if you exit, then try and run the simulator
+again, error messages may result? From looking up things online, it seems to be
+expected behavior. :-( Try CTRL+C in the same window to exit. I've been able to
+get `simulation.launch` to work fairly consistently, fortunately.
+
+For "Running the Mobile Manipulation Demo":
+
+    The playground will get set up, just be patient. :-) It takes a few extra
+    seconds due to a "namespace" error message, must be due to slow loading of
+    data online. However, a playgroud _should_ eventually appear.
+
+    Then the next part moves the Fetch throughout the Gazebo simulator. It's
+    pretty cool. Doesn't work reliably, see GitHub issue I posted.
+
+I think this will be easier on a desktop since Gazebo also seems to be sensitive
+to the graphics card, though after this I fixed it so my laptop can access the
+separate GPU.
+
+How does the demo code work? Two commands:
+
+1. roslaunch fetch_gazebo playground.launch
+2. roslaunch fetch_gazebo_demo demo.launch
+
+Use `roscd [...]` to go to the package directory and look at `launch/` to find
+specific definitions. The first command runs the launch file with several
+readable arguments. The second one is more interesting, launch looks like:
+
+```
+  1 <launch>
+  2 
+  3   <!-- Start navigation -->
+  4   <include file="$(find fetch_gazebo_demo)/launch/fetch_nav.launch" />
+  5 
+  6   <!-- Start MoveIt -->
+  7   <include file="$(find fetch_moveit_config)/launch/move_group.launch" >
+  8     <arg name="info" value="true"/><!-- publish grasp markers -->
+  9   </include>
+ 10 
+ 11   <!-- Start Perception -->
+ 12   <node name="basic_grasping_perception" pkg="simple_grasping" type="basic_grasping_perception" >
+ 13     <rosparam command="load" file="$(find fetch_gazebo_demo)/config/simple_grasping.yaml" />
+ 14   </node>
+ 15 
+ 16   <!-- Drive to the table, pick stuff up -->
+ 17   <node name="demo" pkg="fetch_gazebo_demo" type="demo.py" output="screen" />
+ 18 
+ 19 </launch>
+```
+
+Four easy parts. What's odd, though, is that I can't find `demo.py` anywhere on
+my machine, but it's online at the repo:
+
+https://github.com/fetchrobotics/fetch_gazebo/blob/gazebo2/fetch_gazebo_demo/scripts/demo.py
+
+Might be another useful code reference as it's a clean stand-alone script,
+though with sone MoveIt, etc., obviously.
 
 
 
