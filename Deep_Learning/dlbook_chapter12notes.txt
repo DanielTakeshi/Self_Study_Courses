@@ -1,0 +1,145 @@
+*************************************
+* NOTES ON CHAPTER 12: Applications *
+*************************************
+
+There's a LOT of them! Recall the 2016 publication date, so anything after that
+won't be here (e.g., the Transformer architecture, other DeepRL stuff?).
+
+    12.1: Large-Scale Deep Learning
+
+Nice discussion about how the video game community spurred the development of
+graphics cards, and how the characteristics of graphics card ended up being
+beneficial for the kind of computations used in deep learning. Actually, why?
+
+- We need to perform many operations in parallel (and these are often
+  independent of each other, hence parallelization is easier).
+- Less 'branching' compared to the workload of a CPU.
+- GPUs have memory and data can be put on there, whereas the data is too large
+  for most CPU caches.
+
+They got more popular after more general-purpose GPUs were available that
+could do stuff other than rendering, and NVIDIA's CUDA lets us implement those
+using a C-like language. But, it's very hard to write good CUDA code (not the
+same as writing good CPU code). Good news: once someone does it, we should
+refer to those libraries.
+
+- Data parallelism: easy for inference since we have models run on different
+  machines. But for training, use Hogwild!. (We can alternatively increase the
+  batch size for one machine, but we don't get the advantage of more frequent
+  gradient updates versus HogWild!.)
+- Model parallelism: each machine runs a different part of the model. (Huh, I
+  don't think I'll do this, we'd need a super large network?)
+- Model compression: mentions Hinton's knowledge distillation. :-)
+
+We can a lot with *dynamic structure*: this means we might use different
+components of the network for a given computation. For example, have a gated
+network which picks one of several expert networks to use for evaluation.
+(Results in soft or hard mixture of experts, depending on (as expected) whether
+the 'gater' outputs a soft weighting or a single hard weighting, like a one-hot
+vector of weights.) Even simpler: decision trees.
+
+Efficient hardware implementations: doesn't discuss Tensor Processing Units
+(TPUs) but those came out after this book, I think.
+
+    12.2: Computer Vision
+
+Pre-processing: make sure it's consistent, doesn't have to be fancy. Often
+scaling to [-1,1] or [0,1] suffices. Heck they say there are CNNs that can
+dynamically adjust to take images of different sizes, but I find it easiest to
+always keep a fixed scale.
+
+Examples: *contrast normalization*, and *whitening*. I think contrast
+normalization is like the (X - np.mean(X)) / (np.std(X) + eps) that we've often
+done in computer vision tasks. Whitening is another story about *rescaling
+principal components to have equal variance*.
+
+Actually this is a short section. I'm surprised there wasn't an overview on
+classification, detection, segmentation, and other computer vision problems.
+It's mostly about how data is processed. See CS 231n for details on the actual
+tasks.
+
+    12.3: Speech Recognition (ASR with 'Automatic' in it)
+
+(Not a subsection of NLP, despite ASR as part of my NLP class at Berkeley)
+
+Find the most probable linguistic sequence y given input acoustic sequence X.
+I.e.: argmax_y P(y|X). Before 2012, state of the art systems used Hidden Markov
+Models and Gaussian Mixture Models.
+
+Use "TIMIT" for benchmarking, the MNIST of ASR so to speak.
+
+Not much detail here, unfortunately, besides that Restricted Boltzmann Machines
+(RBMs) were among the ingredients for the resurgence of Deep Learning in ASR.
+But now they are not used. :) I wonder if Transformers are used in ASR now? I
+haven't been following the literature and the section is too short for a proper
+treatment.
+
+    12.4: Natural Language Processing
+
+Largely based on *language models* and treating *words* as the distinct unit,
+and then modeling language as probability of a next word given an existing
+sequence of words. Know *n-gram*, modeling conditional probability of a word
+based on the preceding n-1 words. Unigrams, digrams, and trigrams use 1, 2, and
+3 as n.
+
+    - But recall my NLP class: hard to use raw counts for computing conditional
+      probabilities, because many counts are zero.
+    - Thus use smoothing.
+    - But still many 'curse of dimensionality' challenges with classical n-gram
+      models.
+
+Neural language models: allow us to say that two words are similar, but they
+are distinct, and they show word embeddings. I think they are suggesting
+getting word embeddings by predicting the context given the center word, or
+predicting the center word given context (like we did in 182/282A). But
+regardless, it's good to have embeddings, since instead of representing words
+as one hot vectors, we use lower dimensional representations with Euclidean
+distance to get similarity. This is analogous to a CNN's hidden layer output
+giving us an image embedding.
+
+Issue with high-dimensional outputs: if our model needs to produce words (e.g.,
+probability of next word given existing text) then naively a softmax over all V
+words in the vocabulary means we need a huge matrix to represent this
+operation and to train it (assuming naive cross-entropy loss).
+
+- Naive fix: use a 'short list' of most frequent words only. But that is
+  counter to what we actually want!
+- Slightly better: *hierarchical softmax*. Now predict categories of words, and
+  then predict more specific categories, etc. But performance of actual model
+  often not that great, and hard to get the most likely word in a given
+  context.
+- Importance sampling: the logic for this approach is that the gradient of the
+  softmax can be broken up into the positive and negative phases (interesting
+  intuition, I'd thought about it but was good to see them explicitly state
+  it). The negative phase is an expectation, and we can use (biased) importance
+  sampling.
+- Noise-contrastive estimation is another option, but see Chapter 18 for a
+  fuller treatment.
+
+Interesting contrast with neural nets and n-grams: the latter are much faster
+for look-up operations with hash tables.
+
+Neural machine translation: recall the encoder-decoder architecture, where the
+encoder reads the sentence and produces a data structure called a "context"
+that contains "relevant information" somehow. Advantage of an RNN for
+encoders/decoders is that we can process variable-length sequences.
+
+They cite a paper by Jacob Devlin from 2014 who beat state of the art models by
+using a MLP. Heh, he would later be the first author on the 2018 BERT paper.
+
+They conclude with a brief discussion on some of the earlier attention models
+in Deep NLP. A lot more has happened since then!
+
+    12.5: Other Applications
+
+- Recommender systems and collaborative filtering. Actually this leads them to
+  talk about contextual bandits, which as we know are an intermediate between
+  the k-armed bandit case and the full RL problem. Why contextual bandits here?
+  Because if recommender systems only give users the best item according to its
+  model, there is no 'exploration' of other items that might be even better.
+
+  Also, it's an intermediary because bandits = no state, basically. The normal
+  RL problem means the action directly changes the next state.
+
+- Knowledge representation, reasoning, and question answering. Interesting
+  topics, but for now not part of my direct research agenda.
